@@ -1,7 +1,6 @@
 package com.learn.flavio_mauricio.beatemupgame;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -11,7 +10,6 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -20,9 +18,7 @@ import android.view.View;
 import com.learn.flavio_mauricio.beatemupgame.graphic.GraphicManager;
 import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
 import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
-import com.learn.flavio_mauricio.beatemupgame.logic.Background;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
-import com.learn.flavio_mauricio.beatemupgame.logic.IActor;
 import com.learn.flavio_mauricio.beatemupgame.logic.LogicManager;
 
 import java.util.ArrayList;
@@ -31,9 +27,9 @@ import java.util.ArrayList;
  * This is the SurfaceView where the game is rendered in.
  */
 public class GameView extends SurfaceView {
-
     private GameThread gameLoopThread;
     protected GameMap activeMap;
+    private DPad dPad;
 
     /**
      * Creates a GameView. This extends from SurfaceView and renders
@@ -45,8 +41,12 @@ public class GameView extends SurfaceView {
         super(context, attributeSet);
 
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        System.out.println(metrics.widthPixels + " " + metrics.heightPixels);
+
         this.activeMap = LogicManager.defaultInstance(getResources(), metrics.widthPixels, metrics.heightPixels);
+        Bitmap sprite = BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad);
+
+        this.dPad = new DPad(sprite, metrics.widthPixels, metrics.heightPixels);
+
         gameLoopThread = new GameThread(this, activeMap);
 
         //This holder thing manages the game thread loop.
@@ -89,36 +89,23 @@ public class GameView extends SurfaceView {
         this.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                //if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                /*  TODO
-                    !!!Warning!!!
-                    These touch positions are relative to the 94x94 d-pad on 2-inch devices.
-                    Hadn't tested with different devices.
-                    We need to create a class to manage this stuff...*/
-
-                float x = motionEvent.getX();
-                float y = motionEvent.getY();
-                System.out.println("Pressed at " + x + ", " + y);
-                if(y >= 55 && y <= 155) {
-                    if (x <= 160) {
-                        //go left
-                        activeMap.getPlayer().setDerivative(-2f, 0);
-                    } else{
-                        //go right
-                        activeMap.getPlayer().setDerivative(2f, 0);
-                    }
-                }else{
-                    if (y >= 110) {
-                        //go down
-                        activeMap.getPlayer().setDerivative(0, 2f);
-                    } else {
-                        //go up
-                        activeMap.getPlayer().setDerivative(0, -2f);
-                    }
+                int hat[];
+                switch(motionEvent.getAction()){
+                    case MotionEvent.ACTION_DOWN:
+                        hat = dPad.getButtonPressed(motionEvent.getX(), motionEvent.getY());
+                        activeMap.getPlayer().setDerivative(hat[0], hat[1]);
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        hat = dPad.getButtonPressed(motionEvent.getX(), motionEvent.getY());
+                        activeMap.getPlayer().setDerivative(hat[0], hat[1]);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        activeMap.getPlayer().setDerivative(0, 0);
+                        break;
+                    default:
+                        activeMap.getPlayer().setDerivative(0, 0);
+                        break;
                 }
-                // }else{
-                //activeMap.getPlayer().setDerivative(0, 0);
-                //}
                 return true;
             }
         });
@@ -131,11 +118,11 @@ public class GameView extends SurfaceView {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.BLACK);  // black background.
-
-        Paint paint = new Paint();
-        paint.setColor(Color.TRANSPARENT);
+        /*
+         Paint paint = new Paint();
+         paint.setColor(Color.TRANSPARENT);
         paint.setAlpha(255);
-
+        */
 
         /*
             Element drawing. Currently I know no way to set depth for this,
@@ -144,7 +131,8 @@ public class GameView extends SurfaceView {
         drawBackground(canvas, null);
         drawFloor(canvas, null);
         drawActors(canvas, null);   // Still haven't figured how to draw actors with paint.
-        drawControls(canvas, paint);
+        drawControls(canvas, null);
+
 
     }
 
@@ -187,12 +175,8 @@ public class GameView extends SurfaceView {
     private void drawControls(Canvas canvas, Paint paint) {
         //paint.setAntiAlias(true);
         //paint.setFilterBitmap(true);
-        /* TODO
-            This little guy creates an object for the Bitmap every loop iteration. This
-            cannot happen on future releases!!
-         */
+        dPad.Draw(canvas, paint);
         //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad);
         //canvas.drawBitmap(bmp, this.getLeft(), this.getBottom()-bmp.getHeight(), paint);
     }
-
 }

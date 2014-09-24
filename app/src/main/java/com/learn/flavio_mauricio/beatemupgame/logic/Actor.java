@@ -10,6 +10,7 @@ public class Actor extends GameObject {
 
     private int width;
     private int height;
+    private int speed = 5;
     private float dx = 0;
     private float dy = 0;
 
@@ -36,8 +37,8 @@ public class Actor extends GameObject {
     }
 
     public void setDerivative(float dx, float dy) {
-        this.dx = dx;
-        this.dy = dy;
+        this.dx = speed*dx;
+        this.dy = speed*dy;
     }
 
 }

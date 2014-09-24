@@ -9,6 +9,7 @@ import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
  * the map and screen.
  */
 public class GameThread extends Thread {
+    static final long FPS = 10;
     private GameView view;
     private boolean running = false;
     private GameMap activeMap;
@@ -29,8 +30,12 @@ public class GameThread extends Thread {
             This loop implementation displays somewhat choppy refreshes.
             We have to ask uncle google for help later.
          */
+        long ticksPS = 1000 / FPS;
+        long startTime;
+        long sleepTime;
         while (running) {
             Canvas c = null;
+            startTime = System.currentTimeMillis();
             try {
                 c = view.getHolder().lockCanvas();
                 activeMap.update();
@@ -42,6 +47,13 @@ public class GameThread extends Thread {
                     view.getHolder().unlockCanvasAndPost(c);
                 }
             }
+            sleepTime = ticksPS-(System.currentTimeMillis() - startTime);
+            try {
+                if (sleepTime > 0)
+                    sleep(sleepTime);
+                else
+                    sleep(10);
+            } catch (Exception e) {}
         }
     }
 }
