@@ -149,19 +149,19 @@ public class GameView extends SurfaceView {
     }
 
     private void drawFloor(Canvas canvas, Paint paint) {
-        Rect bmpRect = new Rect(this.getLeft(), this.getBottom()/2,
-                this.getRight(), this.getBottom());
-        Sprite sprite = GraphicManager.getSprite(activeMap.getFloor());
-        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+        activeMap.drawFloor(canvas, paint);
     }
 
     private void drawActors(Canvas canvas, Paint paint) {
+        activeMap.drawActors(canvas, paint);
         //paint.setColor(Color.TRANSPARENT);
-        ArrayList<Actor> renderList = activeMap.getRenderList();
+        /*ArrayList<Actor> renderList = activeMap.getRenderList();
         for(Actor actor : renderList) {
             Sprite sprite = GraphicManager.getSprite(actor);
             PointF pos = activeMap.getActorPos(actor);
-            Rect bmpRect = new Rect((int)pos.x, (int)pos.y,
+            int posX = ((pos.x/100) * )
+            canvas.drawBitmap(sprite.update(), pos.x, pos.y, paint);
+            /*Rect bmpRect = new Rect((int)pos.x, (int)pos.y,
                     (int)actor.getWidth()+(int)pos.x, (int)actor.getHeight()+(int)pos.y);
             if(actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
                 canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
@@ -169,7 +169,7 @@ public class GameView extends SurfaceView {
                 canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
             }
 
-        }
+        }*/
     }
 
     private void drawControls(Canvas canvas, Paint paint) {

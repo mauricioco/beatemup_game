@@ -1,6 +1,7 @@
 package com.learn.flavio_mauricio.beatemupgame;
 
 import android.graphics.Canvas;
+import android.view.View;
 
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
 

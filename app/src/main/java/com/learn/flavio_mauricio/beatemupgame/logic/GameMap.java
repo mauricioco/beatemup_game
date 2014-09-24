@@ -1,6 +1,12 @@
 package com.learn.flavio_mauricio.beatemupgame.logic;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
+
+import com.learn.flavio_mauricio.beatemupgame.graphic.GraphicManager;
+import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -16,15 +22,15 @@ public class GameMap extends GameObject {
      */
 
     //private int blocks = 1; // each block occupies a device screen. As of now, it can only show 1 block.
-    private float width;
-    private float height;
+    private int width;
+    private int height;
     private Background background;
     private Floor floor;
     private IActor player = null;
     private ArrayList<Actor> contents;  // list of existing actors
     private Hashtable<Actor, PointF> actorsLocation;    // hashtable where each actor is mapped to its current position.
 
-    public GameMap(String id, Background background, Floor floor, float width, float height) {
+    public GameMap(String id, Background background, Floor floor, int width, int height) {
         super(id);
         this.width = width;
         this.height = height;
@@ -44,12 +50,12 @@ public class GameMap extends GameObject {
         actorsLocation = new Hashtable<Actor, PointF>();
     }*/
 
-    public void putActorAt(Actor actor, float x, float y) {
+    public void putActorAt(Actor actor, int x, int y) {
         contents.add(actor);
         actorsLocation.put(actor, new PointF(x, y));
     }
 
-    public void putPlayerAt(IActor player, float x, float y) {
+    public void putPlayerAt(IActor player, int x, int y) {
         this.player = player;
         this.putActorAt(player, x, y);
     }
@@ -67,7 +73,7 @@ public class GameMap extends GameObject {
     }
 
     public float getFloorSize() {
-        return 100f; // This will be dynamic in the future. For now, we are testing with fixed values.
+        return height/2; // This will be dynamic in the future. For now, we are testing with fixed values.
     }
 
     public IActor getPlayer() {
@@ -91,21 +97,42 @@ public class GameMap extends GameObject {
      * @return
      */
     public boolean isInside(float x, float y, float actorWidth, float actorHeight) {
-        if( (x < 0 || x > width) ||
-                (y < getFloorSize() || y > height) ) {
-            return false;
-        }
+        int posX = (int) ((x / 100) * width);
+        int posY = (int) ((y / 100) * height);
 
-        float dx = x+actorWidth;
-        float dy = y+actorHeight;
-
-        // Remember: screen size
-        if( (dx < 0 || dx > width) ||
-                (dy > height) ) {
-            return false;
+        //API 11 or newer has a navigation bar, so map limits have to be adjusted
+        if (android.os.Build.VERSION.SDK_INT >= 11){
+            if((posX < 0 || (posX + actorWidth*2) > width) || (posY < getFloorSize() || (posY + actorHeight*2) > height) ) {
+                return false;
+            }
+        }else{
+            if((posX < 0 || (posX + actorWidth) > width) || (posY < getFloorSize() || (posY + actorHeight) > height) ) {
+                return false;
+            }
         }
 
         return true;
+    }
+
+    public void drawFloor(Canvas canvas, Paint paint){
+        this.width = canvas.getWidth();
+        this.height = canvas.getHeight();
+
+        Rect bmpRect = new Rect(0, height/2,
+                width, height);
+        Sprite sprite = GraphicManager.getSprite(this.getFloor());
+        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+    }
+
+    public void drawActors(Canvas canvas, Paint paint){
+        ArrayList<Actor> renderList = this.getRenderList();
+        for(Actor actor : renderList) {
+            Sprite sprite = GraphicManager.getSprite(actor);
+            PointF pos = this.getActorPos(actor);
+            int posX = (int) ((pos.x / 100) * width);
+            int posY = (int) ((pos.y / 100) * height);
+            canvas.drawBitmap(sprite.update(), posX, posY, paint);
+        }
     }
 
     /*

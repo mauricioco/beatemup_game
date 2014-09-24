@@ -63,9 +63,6 @@ public class DPad {
             This little guy creates an object for the Bitmap every loop iteration. This
             cannot happen on future releases!!
          */
-        System.out.println("Loop tamanhos");
-        System.out.println(canvas.getWidth());
-        System.out.println(canvas.getHeight());
         this.posY = canvas.getHeight() - sprite.getHeight();
         canvas.drawBitmap(sprite, posX, posY, paint);
 

@@ -11,7 +11,7 @@ import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
  * for the classes in the logic package use.
  */
 public class LogicManager {
-    static public GameMap defaultInstance(Resources resources, float width, float height) {
+    static public GameMap defaultInstance(Resources resources, int width, int height) {
         Background bg_sky = new Background("sky");
         Floor fl_grass = new Floor("grass");
         IActor player = new IActor("player", 32, 32);
@@ -23,7 +23,7 @@ public class LogicManager {
         GraphicManager.putSprite(player, playerSprite);
 
         GameMap gameMap = new GameMap("mapTest", bg_sky, fl_grass, width, height);
-        gameMap.putPlayerAt(player, 32, 120);
+        gameMap.putPlayerAt(player, 20, 60);
         return gameMap;
     }
 }

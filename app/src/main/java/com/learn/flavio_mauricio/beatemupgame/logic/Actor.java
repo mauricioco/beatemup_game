@@ -10,7 +10,7 @@ public class Actor extends GameObject {
 
     private int width;
     private int height;
-    private int speed = 5;
+    private int speed = 2;
     private float dx = 0;
     private float dy = 0;
 
