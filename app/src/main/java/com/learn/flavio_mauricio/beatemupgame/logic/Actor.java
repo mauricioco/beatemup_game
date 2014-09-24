@@ -27,6 +27,14 @@ public class Actor extends GameObject {
         return dy;
     }
 
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
     public void setDerivative(float dx, float dy) {
         this.dx = dx;
         this.dy = dy;

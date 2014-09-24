@@ -16,20 +16,33 @@ public class GameMap extends GameObject {
      */
 
     //private int blocks = 1; // each block occupies a device screen. As of now, it can only show 1 block.
+    private float width;
+    private float height;
     private Background background;
     private Floor floor;
     private IActor player = null;
     private ArrayList<Actor> contents;  // list of existing actors
     private Hashtable<Actor, PointF> actorsLocation;    // hashtable where each actor is mapped to its current position.
 
-    public GameMap(String id, Background background, Floor floor) {
+    public GameMap(String id, Background background, Floor floor, float width, float height) {
         super(id);
+        this.width = width;
+        this.height = height;
         //this.blocks = blocks;
         this.background = background;
         this.floor = floor;
         contents = new ArrayList<Actor>();
         actorsLocation = new Hashtable<Actor, PointF>();
     }
+    /*
+    public GameMap(String id, Background background, Floor floor, float floorSize) {
+        super(id);
+        this.blocks = blocks;
+        this.background = background;
+        this.floor = floor;
+        contents = new ArrayList<Actor>();
+        actorsLocation = new Hashtable<Actor, PointF>();
+    }*/
 
     public void putActorAt(Actor actor, float x, float y) {
         contents.add(actor);
@@ -53,6 +66,10 @@ public class GameMap extends GameObject {
         return floor;
     }
 
+    public float getFloorSize() {
+        return 100f; // This will be dynamic in the future. For now, we are testing with fixed values.
+    }
+
     public IActor getPlayer() {
         return player;
     }
@@ -64,6 +81,31 @@ public class GameMap extends GameObject {
         ArrayList<Actor> renderList = new ArrayList<Actor>();
         renderList.add(player);
         return renderList;
+    }
+
+    /**
+     * This is the method to verify pertinence within the map. The beginning
+     * of collision detection! By now it's using the android screen as reference.
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isInside(float x, float y, float actorWidth, float actorHeight) {
+        if( (x < 0 || x > width) ||
+                (y < getFloorSize() || y > height) ) {
+            return false;
+        }
+
+        float dx = x+actorWidth;
+        float dy = y+actorHeight;
+
+        // Remember: screen size
+        if( (dx < 0 || dx > width) ||
+                (dy > height) ) {
+            return false;
+        }
+
+        return true;
     }
 
     /*
@@ -94,7 +136,9 @@ public class GameMap extends GameObject {
     private void updateActorPos(Actor actor) {
         PointF oldPos = actorsLocation.get(actor);
         PointF newPos = new PointF(oldPos.x+actor.getDx(), oldPos.y+actor.getDy());
-        actorsLocation.put(actor, newPos);
+        if(isInside(newPos.x, newPos.y, actor.getWidth(), actor.getHeight())) {
+            actorsLocation.put(actor, newPos);
+        }
     }
 
 }

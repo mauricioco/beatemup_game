@@ -1,13 +1,17 @@
 package com.learn.flavio_mauricio.beatemupgame;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,7 +20,9 @@ import android.view.View;
 import com.learn.flavio_mauricio.beatemupgame.graphic.GraphicManager;
 import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
 import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
+import com.learn.flavio_mauricio.beatemupgame.logic.Background;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
+import com.learn.flavio_mauricio.beatemupgame.logic.IActor;
 import com.learn.flavio_mauricio.beatemupgame.logic.LogicManager;
 
 import java.util.ArrayList;
@@ -37,7 +43,10 @@ public class GameView extends SurfaceView {
      */
     public GameView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-        this.activeMap = LogicManager.defaultInstance(getResources());
+
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        System.out.println(metrics.widthPixels + " " + metrics.heightPixels);
+        this.activeMap = LogicManager.defaultInstance(getResources(), metrics.widthPixels, metrics.heightPixels);
         gameLoopThread = new GameThread(this, activeMap);
 
         //This holder thing manages the game thread loop.
@@ -85,26 +94,26 @@ public class GameView extends SurfaceView {
                     !!!Warning!!!
                     These touch positions are relative to the 94x94 d-pad on 2-inch devices.
                     Hadn't tested with different devices.
-                    We need to create a class to manage this stuff...
-                 */
+                    We need to create a class to manage this stuff...*/
+
                 float x = motionEvent.getX();
-                float y = motionEvent.getY() - (320-112);
+                float y = motionEvent.getY();
                 System.out.println("Pressed at " + x + ", " + y);
-                if(y >= 94*0.334f && y <= 94*0.656f) {
-                    if (x <= 0.32f * 94) {
+                if(y >= 55 && y <= 155) {
+                    if (x <= 160) {
                         //go left
-                        activeMap.getPlayer().setDerivative(-.75f, 0);
-                    } else if (x >= 0.688f * 94) {
+                        activeMap.getPlayer().setDerivative(-2f, 0);
+                    } else{
                         //go right
-                        activeMap.getPlayer().setDerivative(.75f, 0);
+                        activeMap.getPlayer().setDerivative(2f, 0);
                     }
-                }else if(x >= 0.32f * 94 && x <= 0.688f * 94){
-                    if (y <= 94*0.334f) {
-                        //go up
-                        activeMap.getPlayer().setDerivative(0, -.75f);
-                    } else if (y >= 94*0.656f) {
+                }else{
+                    if (y >= 110) {
                         //go down
-                        activeMap.getPlayer().setDerivative(0, .75f);
+                        activeMap.getPlayer().setDerivative(0, 2f);
+                    } else {
+                        //go up
+                        activeMap.getPlayer().setDerivative(0, -2f);
                     }
                 }
                 // }else{
@@ -122,11 +131,11 @@ public class GameView extends SurfaceView {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.drawColor(Color.BLACK);  // black background.
-        /*
+
         Paint paint = new Paint();
         paint.setColor(Color.TRANSPARENT);
         paint.setAlpha(255);
-        */
+
 
         /*
             Element drawing. Currently I know no way to set depth for this,
@@ -134,28 +143,44 @@ public class GameView extends SurfaceView {
          */
         drawBackground(canvas, null);
         drawFloor(canvas, null);
-        drawActors(canvas, null);
-        drawControls(canvas, null);
+        drawActors(canvas, null);   // Still haven't figured how to draw actors with paint.
+        drawControls(canvas, paint);
 
     }
 
     private void drawBackground(Canvas canvas, Paint paint) {
+        /* TODO
+            remember, both background and floor are being drawn for one screen
+            only!
+         */
+        Rect bmpRect = new Rect(this.getLeft(), this.getTop(), this.getRight(), this.getBottom());
         Sprite sprite = GraphicManager.getSprite(activeMap.getBackground());
-        canvas.drawBitmap(sprite.update(), this.getLeft(), this.getTop(), paint);
-        //canvas.drawRect(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), paint);
+        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+
+
     }
 
     private void drawFloor(Canvas canvas, Paint paint) {
+        Rect bmpRect = new Rect(this.getLeft(), this.getBottom()/2,
+                this.getRight(), this.getBottom());
         Sprite sprite = GraphicManager.getSprite(activeMap.getFloor());
-        canvas.drawBitmap(sprite.update(), this.getLeft(), this.getTop() + 120, paint);
+        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
     }
 
     private void drawActors(Canvas canvas, Paint paint) {
+        //paint.setColor(Color.TRANSPARENT);
         ArrayList<Actor> renderList = activeMap.getRenderList();
         for(Actor actor : renderList) {
             Sprite sprite = GraphicManager.getSprite(actor);
             PointF pos = activeMap.getActorPos(actor);
-            canvas.drawBitmap(sprite.update(), pos.x, pos.y, paint);
+            Rect bmpRect = new Rect((int)pos.x, (int)pos.y,
+                    (int)actor.getWidth()+(int)pos.x, (int)actor.getHeight()+(int)pos.y);
+            if(actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
+                canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+            }else{  // is animated
+                canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+            }
+
         }
     }
 
@@ -166,8 +191,8 @@ public class GameView extends SurfaceView {
             This little guy creates an object for the Bitmap every loop iteration. This
             cannot happen on future releases!!
          */
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad);
-        canvas.drawBitmap(bmp, this.getLeft(), this.getBottom()-bmp.getHeight(), paint);
+        //Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad);
+        //canvas.drawBitmap(bmp, this.getLeft(), this.getBottom()-bmp.getHeight(), paint);
     }
 
 }

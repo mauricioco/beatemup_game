@@ -9,4 +9,5 @@ public class Background extends GameObject {
         super(id);
     }
 
+
 }
