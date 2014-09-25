@@ -13,17 +13,20 @@ import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
 public class LogicManager {
     static public GameMap defaultInstance(Resources resources, float width, float height) {
         Background bg_sky = new Background("sky");
-        Floor fl_grass = new Floor("grass");
+        Floor fl_grass = new Floor("grass", height/2+height/8);
         IActor player = new IActor("player", 32, 32);
+        Actor tree = new IActor("tree", 32, 32);
         GraphicManager.putSprite(bg_sky, new Sprite(bg_sky, resources, R.drawable.background_sky));
         GraphicManager.putSprite(fl_grass, new Sprite(fl_grass, resources, R.drawable.floor_grass));
+        GraphicManager.putSprite(tree, new Sprite(tree, resources, R.drawable.tree));
         Sprite playerSprite = new Sprite(player, resources, R.drawable.ic_launcher);
         playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_2);
         playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_3);
         GraphicManager.putSprite(player, playerSprite);
 
         GameMap gameMap = new GameMap("mapTest", bg_sky, fl_grass, width, height);
-        gameMap.putPlayerAt(player, 32, 120);
+        gameMap.putPlayerAt(player, 0, height - height/8);
+        gameMap.putActorAt(tree, width/2, height/8);
         return gameMap;
     }
 }

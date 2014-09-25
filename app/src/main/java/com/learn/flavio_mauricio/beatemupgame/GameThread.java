@@ -9,7 +9,7 @@ import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
  * the map and screen.
  */
 public class GameThread extends Thread {
-    static final long FPS = 10;
+    static final long FPS = 30;
     private GameView view;
     private boolean running = false;
     private GameMap activeMap;

@@ -5,8 +5,15 @@ package com.learn.flavio_mauricio.beatemupgame.logic;
  */
 public class Floor extends GameObject {
 
-    public Floor(String id) {
+    private float floorLimit;
+
+    public Floor(String id, float floorLimit) {
         super(id);
+        this.floorLimit = floorLimit;
+    }
+
+    public float getFloorLimit() {
+        return floorLimit;
     }
 
 }

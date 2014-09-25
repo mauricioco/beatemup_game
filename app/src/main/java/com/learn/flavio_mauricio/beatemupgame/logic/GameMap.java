@@ -66,20 +66,36 @@ public class GameMap extends GameObject {
         return floor;
     }
 
-    public float getFloorSize() {
-        return 100f; // This will be dynamic in the future. For now, we are testing with fixed values.
+    public float getHeight() {
+        return height;
     }
 
     public IActor getPlayer() {
         return player;
     }
 
+    public float getWidth() {
+        return width;
+    }
+
     public ArrayList<Actor> getRenderList() {
-        /* TODO
-            REMEMBER - currently only the player is being rendered.
-         */
         ArrayList<Actor> renderList = new ArrayList<Actor>();
-        renderList.add(player);
+        renderList.add(contents.get(0));
+        /*
+        for(int i=1; i<contents.size(); i++) {
+            Actor actor = contents.get(i);
+            PointF pos = actorsLocation.get(actor);
+            renderList.add(0, actor);
+            int indexToSet = 0;
+            for(int j=1; i<renderList.size(); j++) {
+                Actor actorToCompare = renderList.get(j);
+                PointF posToCompare = actorsLocation.get(actorToCompare);
+                if(posToCompare.y < pos.y) {
+                    renderList.set(0, actorToCompare);
+                }
+            }
+        }
+        */
         return renderList;
     }
 
@@ -92,7 +108,7 @@ public class GameMap extends GameObject {
      */
     public boolean isInside(float x, float y, float actorWidth, float actorHeight) {
         if( (x < 0 || x > width) ||
-                (y < getFloorSize() || y > height) ) {
+                (y < floor.getFloorLimit()+actorHeight/2 || y > height) ) {
             return false;
         }
 

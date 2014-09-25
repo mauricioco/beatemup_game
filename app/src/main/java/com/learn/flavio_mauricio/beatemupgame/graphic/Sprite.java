@@ -78,4 +78,12 @@ public class Sprite {
     public Bitmap update() {
         return bmp;
     }
+
+    public int getWidth() {
+        return bmp.getWidth();
+    }
+
+    public int getHeight() {
+        return bmp.getHeight();
+    }
 }
