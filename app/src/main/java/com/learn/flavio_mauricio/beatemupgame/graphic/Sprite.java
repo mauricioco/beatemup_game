@@ -24,7 +24,6 @@ public class Sprite {
     private ArrayList<Bitmap> bmpAnim;
     private int animIndex = 1;
     private boolean still = false;
-    private int eachUpdt = 0;
 
     public Sprite(GameObject gameObject, Resources resources, int resourceId) {
         this.bmp = BitmapFactory.decodeResource(resources, resourceId);
@@ -41,36 +40,24 @@ public class Sprite {
 
     /**
      * Very crude animation method... but it works!
+     * We need to set a timer for when to update the sprite animation.
      * @return
      */
     public Bitmap updateAnim() {
         if(bmpAnim == null) {
             return bmp;
         }else{
-            if(eachUpdt > 4) {
-                eachUpdt=0;
-                if (still) {
-                    still = false;
-                    return bmpAnim.get(0);
-                } else {
-                    still = true;
-                    if (animIndex >= 3) {
-                        animIndex = 1;
-                    }
-                    Bitmap toRet = bmpAnim.get(animIndex);
-                    animIndex++;
-                    return toRet;
+            if (still) {
+                still = false;
+                return bmpAnim.get(0);
+            } else {
+                still = true;
+                if (animIndex >= 3) {
+                    animIndex = 1;
                 }
-            }else {
-                eachUpdt++;
-                if (still) {
-                    return bmpAnim.get(0);
-                } else {
-                    if (animIndex >= 3) {
-                        animIndex = 1;
-                    }
-                    return bmpAnim.get(animIndex);
-                }
+                Bitmap toRet = bmpAnim.get(animIndex);
+                animIndex++;
+                return toRet;
             }
         }
     }

@@ -10,6 +10,7 @@ import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
  */
 public class GameThread extends Thread {
     static final long FPS = 30;
+
     private GameView view;
     private boolean running = false;
     private GameMap activeMap;
@@ -25,11 +26,6 @@ public class GameThread extends Thread {
 
     @Override
     public void run() {
-        /*
-            TODO
-            This loop implementation displays somewhat choppy refreshes.
-            We have to ask uncle google for help later.
-         */
         long ticksPS = 1000 / FPS;
         long startTime;
         long sleepTime;

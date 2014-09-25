@@ -16,6 +16,7 @@ public class LogicManager {
         Floor fl_grass = new Floor("grass", height/2+height/8);
         IActor player = new IActor("player", 32, 32);
         Actor tree = new IActor("tree", 32, 32);
+
         GraphicManager.putSprite(bg_sky, new Sprite(bg_sky, resources, R.drawable.background_sky));
         GraphicManager.putSprite(fl_grass, new Sprite(fl_grass, resources, R.drawable.floor_grass));
         GraphicManager.putSprite(tree, new Sprite(tree, resources, R.drawable.tree));
@@ -25,8 +26,9 @@ public class LogicManager {
         GraphicManager.putSprite(player, playerSprite);
 
         GameMap gameMap = new GameMap("mapTest", bg_sky, fl_grass, width, height);
-        gameMap.putPlayerAt(player, 0, height - height/8);
+        gameMap.putPlayerAt(player, width-64, height-64);
         gameMap.putActorAt(tree, width/2, height/8);
+
         return gameMap;
     }
 }

@@ -1,73 +1,66 @@
 package com.learn.flavio_mauricio.beatemupgame;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.view.SurfaceView;
-
-import com.learn.flavio_mauricio.beatemupgame.R;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.graphics.Rect;
 
 /**
- * Directional Pad
+ * Directional Pad class representation.
  */
 public class DPad {
-    private Bitmap sprite;
+    private Bitmap bmp;
     private float posX;
     private float posY;
+    private float scale;
 
-    public DPad(Bitmap sprt, float x, float y){
-        sprite = sprt;
-        posX = 0;
-        posY = 0;
+    public DPad(Bitmap bmp, float x, float y, float scale){
+        this.bmp = bmp;
+        this.posX = 0;
+        this.posY = 0;
+        this.scale = scale;
     }
 
-    public int[] getButtonPressed(float x, float y){
+    public int[] getButtonPressed(float x, float y) {
         int result[] = {0, 0};
         //DeadZone
-        float splitX = sprite.getWidth()/3;
-        float splitY = sprite.getHeight()/3;
-        float deadZoneX[] = {splitX, splitX*2};
-        float deadZoneY[] = {splitY, splitY*2};
+        float splitX = bmp.getWidth() * scale / 3;
+        float splitY = bmp.getHeight() * scale / 3;
+        float deadZoneX[] = {splitX, splitX * 2};
+        float deadZoneY[] = {splitY, splitY * 2};
 
-
-        //Mapping Touchable area
-        //Left Button
-        if ((x >= posX)&&(x <= posX + deadZoneX[0])){
-            result[0] = -1;
+        // checking first if touch is inside dpad area...
+        if (x < posX + bmp.getWidth() * scale && y > posX) {
+            //Mapping Touchable area
+            //Left Button
+            if ((x >= posX) && (x <= posX + deadZoneX[0])) {
+                result[0] = -1;
+            }
+            //Right Button
+            if ((x >= posX + deadZoneX[1]) && (x <= (bmp.getWidth() * scale + posX))) {
+                result[0] = 1;
+            }
+            //Up Button
+            if ((y >= posY) && (y <= posY + deadZoneY[0])) {
+                result[1] = -1;
+            }
+            //Down Button
+            if ((y >= posY + deadZoneY[1]) && (y <= posY + bmp.getHeight() * scale)) {
+                result[1] = 1;
+            }
         }
-        //Right Button
-        if ((x >= posX + deadZoneX[1])&&(x <= (sprite.getWidth() + posX))){
-            result[0] = 1;
-        }
-        //Up Button
-        if ((y >= posY)&&(y <= posY + deadZoneY[0])){
-            result[1] = -1;
-        }
-        //Down Button
-        if ((y >= posY + deadZoneY[1])&&(y <= posY + sprite.getHeight())){
-            result[1] = 1;
-        }
-
         return result;
 
     }
 
     public void Draw(Canvas canvas, Paint paint) {
-        //paint.setAntiAlias(true);
-        //paint.setFilterBitmap(true);
         /* TODO
-            This little guy creates an object for the Bitmap every loop iteration. This
-            cannot happen on future releases!!
+            find a appropriable place for this method later.
          */
-        System.out.println("Loop tamanhos");
-        System.out.println(canvas.getWidth());
-        System.out.println(canvas.getHeight());
-        this.posY = canvas.getHeight() - sprite.getHeight();
-        canvas.drawBitmap(sprite, posX, posY, paint);
+        this.posY = canvas.getHeight() - bmp.getHeight()*scale;
+        Rect bmpRect = new Rect((int)posX, (int)posY,
+                (int)posX+(int)(bmp.getWidth()*scale), (int)posY+(int)(bmp.getHeight()*scale));
+        canvas.drawBitmap(bmp, null, bmpRect, paint);
 
     }
 }

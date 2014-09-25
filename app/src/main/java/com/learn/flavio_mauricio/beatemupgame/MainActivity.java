@@ -1,34 +1,57 @@
 package com.learn.flavio_mauricio.beatemupgame;
 
-import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
-/**
- * This is the main activity - the first activity to be executed
- * (as configured in AndroidManifest.xml).
- */
+
 public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if(android.os.Build.VERSION.SDK_INT >= 11) {
-            /* TODO
-                Forcing to hide that d*mn action bar. Go away!!
-                We need to test it though...
-             */
-            ActionBar killMe = this.getActionBar();
-            if(killMe != null) {
-                killMe.hide();
+
+        final Button button = (Button) findViewById(R.id.button_start);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), GameActivity.class);
+                System.out.println(intent);
+                MainActivity.this.startActivity(intent);
             }
-        }
+        });
+
+        final Button button2 = (Button) findViewById(R.id.button_quit);
+        button2.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                finish();
+                System.exit(0);
+            }
+        });
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
-
 }

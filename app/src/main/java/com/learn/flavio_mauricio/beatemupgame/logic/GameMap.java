@@ -108,7 +108,7 @@ public class GameMap extends GameObject {
      */
     public boolean isInside(float x, float y, float actorWidth, float actorHeight) {
         if( (x < 0 || x > width) ||
-                (y < floor.getFloorLimit()+actorHeight/2 || y > height) ) {
+                (y < floor.getFloorLimit() || y > height) ) {
             return false;
         }
 

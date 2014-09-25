@@ -16,10 +16,9 @@ import java.util.ArrayList;
 
 /**
  * This class represents the game camera. In the future, this will even scroll!!
+ * Currently, it only shows one unscrollable screen.
  */
 public class Camera {
-
-    final private boolean adaptSizes = false;
 
     private int bgAnim = 0;
 
@@ -32,9 +31,10 @@ public class Camera {
     public Camera(int width, int height, GameMap activeMap, Actor actorToFollow, Resources resources) {
         this.width = width;
         this.height = height;
-        this.activeMap = activeMap;
+        this.activeMap = activeMap; // preferably, this map should have the same width and height of this camera.
         this.actorToFollow = actorToFollow;
-        this.dPad = new DPad(BitmapFactory.decodeResource(resources, R.drawable.button_dpad), 0, 0);
+        float scale = width/480;
+        this.dPad = new DPad(BitmapFactory.decodeResource(resources, R.drawable.button_dpad), 0, 0, scale);
     }
 
     public int[] getButtonPressed(float x, float y) {
@@ -64,7 +64,7 @@ public class Camera {
     }
 
     void drawFloor(Canvas canvas, Paint paint) {
-        PointF actorPos = activeMap.getActorPos(actorToFollow);
+        //PointF actorPos = activeMap.getActorPos(actorToFollow);
         //PointF beginDraw = new PointF(actorPos.x-width/2, actorPos.y-height/2);
         //PointF endDraw = new PointF(beginDraw.x+width, beginDraw.y+height);
         Sprite sprite = GraphicManager.getSprite(activeMap.getFloor());
