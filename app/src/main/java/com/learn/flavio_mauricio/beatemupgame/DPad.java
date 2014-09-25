@@ -35,21 +35,23 @@ public class DPad {
 
 
         //Mapping Touchable area
-        //Left Button
-        if ((x >= posX)&&(x <= posX + deadZoneX[0])){
-            result[0] = -1;
-        }
-        //Right Button
-        if ((x >= posX + deadZoneX[1])&&(x <= (sprite.getWidth() + posX))){
-            result[0] = 1;
-        }
-        //Up Button
-        if ((y >= posY)&&(y <= posY + deadZoneY[0])){
-            result[1] = -1;
-        }
-        //Down Button
-        if ((y >= posY + deadZoneY[1])&&(y <= posY + sprite.getHeight())){
-            result[1] = 1;
+        if ((x >= posX)&&(x <= (sprite.getWidth() + posX)&&(y >= posY)&&(y <= posY + sprite.getHeight()))) {
+            //Left Button
+            if (x <= posX + deadZoneX[0]) {
+                result[0] = -1;
+            }
+            //Right Button
+            if (x >= posX + deadZoneX[1]) {
+                result[0] = 1;
+            }
+            //Up Button
+            if (y <= posY + deadZoneY[0]) {
+                result[1] = -1;
+            }
+            //Down Button
+            if (y >= posY + deadZoneY[1]) {
+                result[1] = 1;
+            }
         }
 
         return result;
