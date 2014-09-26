@@ -103,21 +103,18 @@ public class GameMap extends GameObject {
      * This is the method to verify pertinence within the map. The beginning
      * of collision detection! By now it's using the android screen as reference.
      * @param x
-     * @param y
      * @return
      */
-    public boolean isInside(float x, float y, float actorWidth, float actorHeight) {
-        if( (x < 0 || x > width) ||
-                (y < floor.getFloorLimit() || y > height) ) {
+    public boolean isInsideHorizontal(float x) {
+        if ((x < 0) || (x > width)){
             return false;
         }
 
-        float dx = x+actorWidth;
-        float dy = y+actorHeight;
+        return true;
+    }
 
-        // Remember: screen size
-        if( (dx < 0 || dx > width) ||
-                (dy > height) ) {
+    public boolean isInsideVertical(float y){
+        if ((y < floor.getFloorLimit()) || (y > height)){
             return false;
         }
 
@@ -150,11 +147,20 @@ public class GameMap extends GameObject {
     }
 
     private void updateActorPos(Actor actor) {
-        PointF oldPos = actorsLocation.get(actor);
-        PointF newPos = new PointF(oldPos.x+actor.getDx(), oldPos.y+actor.getDy());
-        if(isInside(newPos.x, newPos.y, actor.getWidth(), actor.getHeight())) {
-            actorsLocation.put(actor, newPos);
+        PointF actorPos = actorsLocation.get(actor);
+
+        PointF newPos = new PointF(actorPos.x + actor.getDx(), actorPos.y);
+        if(isInsideHorizontal(newPos.x)) {
+            actorPos.x = newPos.x;
         }
+
+        newPos.x = actorPos.x;
+        newPos.y = actorPos.y + actor.getDy();
+        if(isInsideVertical(newPos.y)){
+            actorPos.y = newPos.y;
+        }
+
+        actorsLocation.put(actor, actorPos);
     }
 
 }
