@@ -31,7 +31,7 @@ public class DPad {
 
         // checking first if touch is inside dpad area...
         if (x > posX && x < posX + bmp.getWidth() * scale &&
-                y > posY && x < posY + bmp.getHeight() * scale) {
+                y > posY && y < posY + bmp.getHeight() * scale) {
             //Mapping Touchable area
             //Left Button
             if ((x >= posX) && (x <= posX + deadZoneX[0])) {
