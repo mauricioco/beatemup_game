@@ -34,7 +34,7 @@ public class Camera {
         this.activeMap = activeMap; // preferably, this map should have the same width and height of this camera.
         this.actorToFollow = actorToFollow;
         float scale = width/320;
-        this.dPad = new DPad(BitmapFactory.decodeResource(resources, R.drawable.button_dpad), 0, 0, scale);
+        this.dPad = new DPad(BitmapFactory.decodeResource(resources, R.drawable.button_dpad), 0, 0, 40, height);
     }
 
     public int[] getButtonPressed(float x, float y) {
