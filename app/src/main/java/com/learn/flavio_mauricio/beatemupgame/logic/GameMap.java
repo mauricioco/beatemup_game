@@ -19,20 +19,20 @@ public class GameMap extends GameObject {
     private float width;
     private float height;
     private Background background;
-    private Floor floor;
     private IActor player = null;
-    private ArrayList<Actor> contents;  // list of existing actors
+    private ArrayList<Actor> actorList;  // list of existing actors
+    private ArrayList<Floor> floorList;
     private Hashtable<Actor, PointF> actorsLocation;    // hashtable where each actor is mapped to its current position.
 
-    public GameMap(String id, Background background, Floor floor, float width, float height) {
+    public GameMap(String id, Background background, float width, float height) {
         super(id);
         this.width = width;
         this.height = height;
         //this.blocks = blocks;
         this.background = background;
-        this.floor = floor;
-        contents = new ArrayList<Actor>();
-        actorsLocation = new Hashtable<Actor, PointF>();
+        this.actorList = new ArrayList<Actor>();
+        this.floorList = new ArrayList<Floor>();
+        this.actorsLocation = new Hashtable<Actor, PointF>();
     }
     /*
     public GameMap(String id, Background background, Floor floor, float floorSize) {
@@ -40,12 +40,12 @@ public class GameMap extends GameObject {
         this.blocks = blocks;
         this.background = background;
         this.floor = floor;
-        contents = new ArrayList<Actor>();
+        actorList = new ArrayList<Actor>();
         actorsLocation = new Hashtable<Actor, PointF>();
     }*/
 
     public void putActorAt(Actor actor, float x, float y) {
-        contents.add(actor);
+        actorList.add(actor);
         actorsLocation.put(actor, new PointF(x, y));
     }
 
@@ -54,16 +54,16 @@ public class GameMap extends GameObject {
         this.putActorAt(player, x, y);
     }
 
+    public void putFloor(Floor floor) {
+        floorList.add(floor);
+    }
+
     public PointF getActorPos(Actor actor) {
         return actorsLocation.get(actor);
     }
 
     public Background getBackground() {
         return background;
-    }
-
-    public Floor getFloor() {
-        return floor;
     }
 
     public float getHeight() {
@@ -78,12 +78,12 @@ public class GameMap extends GameObject {
         return width;
     }
 
-    public ArrayList<Actor> getRenderList() {
+    public ArrayList<Actor> getActorRenderList() {
         ArrayList<Actor> renderList = new ArrayList<Actor>();
-        renderList.add(contents.get(0));
+        renderList.add(actorList.get(0));
         /*
-        for(int i=1; i<contents.size(); i++) {
-            Actor actor = contents.get(i);
+        for(int i=1; i<actorList.size(); i++) {
+            Actor actor = actorList.get(i);
             PointF pos = actorsLocation.get(actor);
             renderList.add(0, actor);
             int indexToSet = 0;
@@ -96,6 +96,40 @@ public class GameMap extends GameObject {
             }
         }
         */
+        return renderList;
+    }
+
+    public int getActorFloorPosX(float x, Actor actor) {
+        int i, atWidth=0;
+        for(i=0; i<floorList.size(); i++) {
+            if (x < atWidth) {
+                break;
+            }
+            atWidth += floorList.get(i).getSizeX();
+        }
+        int actorX = (int) getActorPos(actor).x;
+        atWidth -= floorList.get(i-1).getSizeX();
+        actorX = atWidth - actorX;
+
+        return atWidth;
+    }
+
+    public Floor[] getFloorRenderList(float x) {
+        Floor[] renderList = new Floor[3];
+        int i, atWidth=0;
+        for(i=0; i<floorList.size(); i++) {
+            if (x < atWidth) {
+                break;
+            }
+            atWidth += floorList.get(i).getSizeX();
+        }
+        if(i-2<floorList.size() && i-2>=0)
+            renderList[0] = floorList.get(i-2);
+        if(i-1<floorList.size() && i-1>=0)
+            renderList[1] = floorList.get(i-1);
+        if(i<floorList.size() && i>=0)
+            renderList[2] = floorList.get(i);
+
         return renderList;
     }
 
@@ -113,8 +147,10 @@ public class GameMap extends GameObject {
         return true;
     }
 
-    public boolean isInsideVertical(float y){
-        if ((y < floor.getFloorLimit()) || (y > height)){
+    public boolean isInsideVertical(float x, float y) {
+        int floorIndex = (int) (x / width);
+        // TODO CHECK FOR EXCEPTION!!
+        if ((y < floorList.get(floorIndex).getFloorLimit()) || (y > height)){
             return false;
         }
         
@@ -123,10 +159,10 @@ public class GameMap extends GameObject {
 
     /*
     // This will return the list of actors to render (in order).
-    public ArrayList<Actor> getRenderList() {
+    public ArrayList<Actor> getActorRenderList() {
         ArrayList<Actor> renderList = new ArrayList<Actor>();
-        for(int i=0; i<contents.size(); i++) {
-            Actor actor = contents.get(i);
+        for(int i=0; i<actorList.size(); i++) {
+            Actor actor = actorList.get(i);
             PointF pos = actorsLocation.get(actor);
             for(int j=0; i<renderList.size(); j++) {
                 Actor actorToCompare = renderList.get(j);
@@ -141,7 +177,7 @@ public class GameMap extends GameObject {
     */
 
     public void update() {
-        for(Actor actor : contents) {
+        for(Actor actor : actorList) {
             updateActorPos(actor);
         }
     }
@@ -156,7 +192,7 @@ public class GameMap extends GameObject {
 
         newPos.x = actorPos.x;
         newPos.y = actorPos.y + actor.getDy();
-        if(isInsideVertical(newPos.y)){
+        if(isInsideVertical(newPos.x, newPos.y)){
             actorPos.y = newPos.y;
         }
 
