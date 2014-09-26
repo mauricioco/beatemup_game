@@ -117,7 +117,7 @@ public class GameMap extends GameObject {
         if ((y < floor.getFloorLimit()) || (y > height)){
             return false;
         }
-
+        
         return true;
     }
 

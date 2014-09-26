@@ -2,8 +2,10 @@ package com.learn.flavio_mauricio.beatemupgame;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 /**
  * This is the main activity - the first activity to be executed
@@ -24,7 +26,16 @@ public class GameActivity extends Activity {
             if(killMe != null) {
                 killMe.hide();
             }
+
+            /* Code to hide nav bar
+            View decorView = getWindow().getDecorView();
+            int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(uiOptions);
+            */
         }
+
+
     }
 
     @Override
