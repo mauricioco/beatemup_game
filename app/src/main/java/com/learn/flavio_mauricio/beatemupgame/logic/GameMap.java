@@ -111,16 +111,6 @@ public class GameMap extends GameObject {
                 (y < floor.getFloorLimit() || y > height) ) {
             return false;
         }
-
-        float dx = x+actorWidth;
-        float dy = y+actorHeight;
-
-        // Remember: screen size
-        if( (dx < 0 || dx > width) ||
-                (dy > height) ) {
-            return false;
-        }
-
         return true;
     }
 

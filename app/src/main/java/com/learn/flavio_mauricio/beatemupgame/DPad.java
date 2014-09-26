@@ -30,7 +30,8 @@ public class DPad {
         float deadZoneY[] = {splitY, splitY * 2};
 
         // checking first if touch is inside dpad area...
-        if (x < posX + bmp.getWidth() * scale && y > posX) {
+        if (x > posX && x < posX + bmp.getWidth() * scale &&
+                y > posY && x < posY + bmp.getHeight() * scale) {
             //Mapping Touchable area
             //Left Button
             if ((x >= posX) && (x <= posX + deadZoneX[0])) {
@@ -57,7 +58,7 @@ public class DPad {
         /* TODO
             find a appropriable place for this method later.
          */
-        this.posY = canvas.getHeight() - bmp.getHeight()*scale;
+        //this.posY = canvas.getHeight() - bmp.getHeight()*scale;
         Rect bmpRect = new Rect((int)posX, (int)posY,
                 (int)posX+(int)(bmp.getWidth()*scale), (int)posY+(int)(bmp.getHeight()*scale));
         canvas.drawBitmap(bmp, null, bmpRect, paint);
