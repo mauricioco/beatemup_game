@@ -69,41 +69,39 @@ public class Camera {
     void drawFloor(Canvas canvas, Paint paint) {
         PointF actorPos = activeMap.getActorPos(actorToFollow);
         PointF beginDraw = new PointF(actorPos.x - width / 2, actorPos.y - height / 2);
-        PointF centerDraw = new PointF(actorPos.x - width / 2, actorPos.y - height / 2);
+        //PointF centerDraw = new PointF(actorPos.x - width / 2, actorPos.y - height / 2);
         PointF endDraw = new PointF(beginDraw.x + width, beginDraw.y + height);
 
-        // getting bg index. Hero is at index 1. Index 0 is the left floor. Index 2 is right.
-        Floor[] floorList = activeMap.getFloorRenderList(actorPos.x);
-        int actorFloorX = activeMap.getActorFloorPosX(actorPos.x, actorToFollow);
+        // Center floor draw!
+        Floor currFloor = activeMap.getFloorAt(actorPos.x);
+        float xAtFloor = actorPos.x;
+        while(xAtFloor > currFloor.getSizeX()) {
+            xAtFloor -= currFloor.getSizeX();   // TODO only works for maps with equal floors
+        }
+        Sprite spriteCenter = GraphicManager.getSprite(currFloor);
+        int centerFloorLimit = (int) currFloor.getFloorLimit();
+        int centerStartX = width/2 - (int)xAtFloor;
+        int centerEndX = centerStartX + currFloor.getSizeX();
+        Rect bmpCenterRect = new Rect(centerStartX, centerFloorLimit, centerEndX, height);
+        canvas.drawBitmap(spriteCenter.update(), null, bmpCenterRect, paint);
 
-        System.out.println(floorList);
-        if (actorPos.x < floorList[1].getSizeX() / 2) {
-            // render center and left floor
-            Sprite spriteCenter = GraphicManager.getSprite(floorList[1]);
-            int centerFloorLimit = (int) floorList[1].getFloorLimit();
-            Rect bmpCenterRect = new Rect(width / 2 - actorFloorX, centerFloorLimit,
-                    width / 2 - actorFloorX + spriteCenter.getWidth(), height);
-            canvas.drawBitmap(spriteCenter.update(), null, bmpCenterRect, paint);
-
-            Sprite spriteLeft = GraphicManager.getSprite(floorList[0]);
-            int leftFloorLimit = (int) floorList[0].getFloorLimit();
-            Rect bmpLeftRect = new Rect(width / 2 - actorFloorX - width, leftFloorLimit,
-                    width / 2 - actorFloorX, height);
+        if (xAtFloor < currFloor.getSizeX()/2) {
+            //left
+            Floor leftFloor = activeMap.getPreviousFloor(currFloor);
+            Sprite spriteLeft = GraphicManager.getSprite(leftFloor);
+            int leftFloorLimit = (int) leftFloor.getFloorLimit();
+            Rect bmpLeftRect = new Rect(centerStartX - leftFloor.getSizeX(), leftFloorLimit,
+                    centerStartX, height);
             canvas.drawBitmap(spriteLeft.update(), null, bmpLeftRect, paint);
-
-        } else {
-            // render center and right floor
-            Sprite spriteCenter = GraphicManager.getSprite(floorList[1]);
-            int centerFloorLimit = (int) floorList[1].getFloorLimit();
-            Rect bmpCenterRect = new Rect(width / 2 - actorFloorX, centerFloorLimit,
-                    width / 2 - actorFloorX + spriteCenter.getWidth(), height);
-            canvas.drawBitmap(spriteCenter.update(), null, bmpCenterRect, paint);
-
-            Sprite spriteRight = GraphicManager.getSprite(floorList[2]);
-            int rightFloorLimit = (int) floorList[2].getFloorLimit();
-            Rect bmpRightRect = new Rect(width / 2 + width - actorFloorX, rightFloorLimit,
-                    width / 2 + 2 * width - actorFloorX, height);
+        }else{
+            //right
+            Floor rightFloor = activeMap.getNextFloor(currFloor);
+            Sprite spriteRight = GraphicManager.getSprite(rightFloor);
+            int rightFloorLimit = (int) rightFloor.getFloorLimit();
+            Rect bmpRightRect = new Rect(centerEndX, rightFloorLimit,
+                    centerEndX + rightFloor.getSizeX(), height);
             canvas.drawBitmap(spriteRight.update(), null, bmpRightRect, paint);
+
         }
 
     }
@@ -112,17 +110,34 @@ public class Camera {
         //paint.setColor(Color.TRANSPARENT);
         ArrayList<Actor> renderList = activeMap.getActorRenderList();
         for (Actor actor : renderList) {
-            Sprite sprite = GraphicManager.getSprite(actor);
-            PointF pos = activeMap.getActorPos(actor);
-            int left = (int) pos.x - (int) (actor.getWidth() * (width / 320) / 2);
-            int top = (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
-            int right = (int) pos.x + (int) actor.getWidth() * (width / 320) / 2;
-            int bottom = (int) pos.y + (int) actor.getHeight() * (height / 240) / 2;
-            Rect bmpRect = new Rect(left, top, right, bottom);
-            if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
-                canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
-            } else {  // is animated
-                canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+            if(actor.getId().equals("player")) {
+                Sprite sprite = GraphicManager.getSprite(actor);
+                PointF pos = activeMap.getActorPos(actor);
+                int left = width/2 - (int) (actor.getWidth() * (width / 320) / 2);
+                int top = (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
+                int right = width/2 + (int) actor.getWidth() * (width / 320) / 2;
+                int bottom = (int) pos.y + (int) actor.getHeight() * (height / 240) / 2;
+                Rect bmpRect = new Rect(left, top, right, bottom);
+                if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
+                    canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+                } else {  // is animated
+                    canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+                }
+            }else{
+                PointF actorToFollowPos = activeMap.getActorPos(actorToFollow);
+                Sprite sprite = GraphicManager.getSprite(actor);
+                PointF pos = activeMap.getActorPos(actor);
+                int left = (int) pos.x - (int) actor.getWidth();
+                left -= (int) actorToFollowPos.x;
+                int top =  (int) pos.y - (int) actor.getHeight();
+                int right = left + (int)actor.getWidth();
+                int bottom = (int) pos.y + (int) actor.getHeight();
+                Rect bmpRect = new Rect(left, top, right, bottom);
+                if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
+                    canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+                } else {  // is animated
+                    canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+                }
             }
 
         }

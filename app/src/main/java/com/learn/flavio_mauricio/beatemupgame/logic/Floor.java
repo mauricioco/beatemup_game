@@ -18,8 +18,8 @@ public class Floor extends GameObject {
         return floorLimit;
     }
 
-    public float getSizeX() {
-        return sizeX;
+    public int getSizeX() {
+        return (int) sizeX;
     }
 
 }

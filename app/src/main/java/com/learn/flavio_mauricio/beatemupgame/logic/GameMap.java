@@ -1,6 +1,7 @@
 package com.learn.flavio_mauricio.beatemupgame.logic;
 
 import android.graphics.PointF;
+import android.graphics.Rect;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -81,57 +82,52 @@ public class GameMap extends GameObject {
     public ArrayList<Actor> getActorRenderList() {
         ArrayList<Actor> renderList = new ArrayList<Actor>();
         renderList.add(actorList.get(0));
-        /*
         for(int i=1; i<actorList.size(); i++) {
-            Actor actor = actorList.get(i);
-            PointF pos = actorsLocation.get(actor);
-            renderList.add(0, actor);
-            int indexToSet = 0;
-            for(int j=1; i<renderList.size(); j++) {
+            Actor actorToAdd = actorList.get(i);
+            PointF posToAdd = actorsLocation.get(actorToAdd);
+            int j;
+            for(j=0; j<renderList.size(); j++) {
                 Actor actorToCompare = renderList.get(j);
                 PointF posToCompare = actorsLocation.get(actorToCompare);
-                if(posToCompare.y < pos.y) {
-                    renderList.set(0, actorToCompare);
+                if(posToCompare.y > posToAdd.y) {
+                    break;
                 }
             }
+            renderList.add(j, actorToAdd);
         }
-        */
+        for(Actor actor : renderList) {
+            System.out.print(actor.getId() + ", ");
+        }
+        System.out.print("\n");
         return renderList;
     }
 
-    public int getActorFloorPosX(float x, Actor actor) {
+    public Floor getFloorAt(float x) {
         int i, atWidth=0;
         for(i=0; i<floorList.size(); i++) {
             if (x < atWidth) {
-                break;
+                return floorList.get(i-1);
             }
             atWidth += floorList.get(i).getSizeX();
         }
-        int actorX = (int) getActorPos(actor).x;
-        atWidth -= floorList.get(i-1).getSizeX();
-        actorX = atWidth - actorX;
-
-        return atWidth;
+        return floorList.get(i-1);
     }
 
-    public Floor[] getFloorRenderList(float x) {
-        Floor[] renderList = new Floor[3];
-        int i, atWidth=0;
-        for(i=0; i<floorList.size(); i++) {
-            if (x < atWidth) {
-                break;
-            }
-            atWidth += floorList.get(i).getSizeX();
-        }
-        if(i-2<floorList.size() && i-2>=0)
-            renderList[0] = floorList.get(i-2);
-        if(i-1<floorList.size() && i-1>=0)
-            renderList[1] = floorList.get(i-1);
-        if(i<floorList.size() && i>=0)
-            renderList[2] = floorList.get(i);
-
-        return renderList;
+    public Floor getPreviousFloor(Floor currFloor) {
+        int i = floorList.indexOf(currFloor);
+        if(i > 0)
+            return floorList.get(i-1);
+        return floorList.get(0);
     }
+
+    public Floor getNextFloor(Floor currFloor) {
+        int i = floorList.indexOf(currFloor);
+        if(i < floorList.size())
+            return floorList.get(i+1);
+        return floorList.get(floorList.size()-1);
+    }
+
+
 
     /**
      * This is the method to verify pertinence within the map. The beginning

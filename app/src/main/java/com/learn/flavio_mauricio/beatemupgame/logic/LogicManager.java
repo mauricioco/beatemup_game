@@ -27,7 +27,18 @@ public class LogicManager {
 
         GameMap gameMap = new GameMap("mapTest", bg_sky, 1280, 720);
         gameMap.putPlayerAt(player, width-64, height-64);
-        gameMap.putActorAt(tree, width/2, height/8);
+        gameMap.putActorAt(tree, width, height-52);
+        gameMap.putActorAt(tree.clone(), width+128, height-64);
+        gameMap.putActorAt(tree.clone(), width+12, height-61);
+        gameMap.putActorAt(tree.clone(), width+1000, height-2);
+        gameMap.putActorAt(tree.clone(), width+1234, height-54);
+        gameMap.putActorAt(tree.clone(), width+24, height-0);
+        gameMap.putActorAt(tree.clone(), width+124, height-11);
+        gameMap.putActorAt(tree.clone(), width+35, height-44);
+        gameMap.putActorAt(tree.clone(), width+1200, height-23);
+        gameMap.putActorAt(tree.clone(), width+546, height-12);
+
+
         gameMap.putFloor(fl_grass);
         gameMap.putFloor(fl_grass);
         gameMap.putFloor(fl_grass);

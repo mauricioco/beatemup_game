@@ -14,6 +14,8 @@ public class Actor extends GameObject {
     private float dx = 0;
     private float dy = 0;
 
+    private int cloneCount = 0;
+
     public Actor(String id, int width, int height) {
         super(id);
         this.width = width;
@@ -39,6 +41,17 @@ public class Actor extends GameObject {
     public void setDerivative(float dx, float dy) {
         this.dx = speed*dx;
         this.dy = speed*dy;
+    }
+
+    public Actor changeId(String id) {
+        this.id = id;
+        return this;
+    }
+
+    public Actor clone() {
+        Actor clone = new Actor(id+"$"+cloneCount, width, height);
+        cloneCount++;
+        return clone;
     }
 
 }
