@@ -14,10 +14,10 @@ import com.learn.flavio_mauricio.beatemupgame.logic.Floor;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
- * This class represents the game camera. In the future, this will even scroll!!
- * Currently, it only shows one unscrollable screen.
+ * This class represents the game camera. This even scrolls!!
  */
 public class Camera {
 
@@ -48,10 +48,6 @@ public class Camera {
     }
 
     void drawBackground(Canvas canvas, Paint paint) {
-        //PointF actorPos = activeMap.getActorPos(actorToFollow);
-        //PointF beginDraw = new PointF(actorPos.x-width/2, actorPos.y-height/2);
-        //PointF endDraw = new PointF(beginDraw.x+width, beginDraw.y+height);
-
         Sprite sprite = GraphicManager.getSprite(activeMap.getBackground());
         Rect bmpRect0 = new Rect(-bgAnim, 0, width - bgAnim, height);
         Rect bmpRect1 = new Rect(width - bgAnim, 0, 2 * width - bgAnim, height);
@@ -67,13 +63,10 @@ public class Camera {
 
     void drawFloor(Canvas canvas, Paint paint) {
         PointF actorPos = activeMap.getActorPos(actorToFollow);
-        PointF beginDraw = new PointF(actorPos.x - width / 2, actorPos.y - height / 2);
-        //PointF centerDraw = new PointF(actorPos.x - width / 2, actorPos.y - height / 2);
-        //PointF endDraw = new PointF(beginDraw.x + width, beginDraw.y + height);
 
-        // Center floor draw!
+        // Center floor draw:
         Floor currFloor = activeMap.getFloorAt(actorPos.x);
-        float xAtFloor = actorPos.x;
+        float xAtFloor = actorPos.x;    // Getting position relative to the current floor.
         while(xAtFloor > currFloor.getSizeX()) {
             xAtFloor -= currFloor.getSizeX();   // TODO only works for maps with equal floors
         }
@@ -87,7 +80,7 @@ public class Camera {
         canvas.drawBitmap(spriteCenter.update(), null, bmpCenterRect, paint);
 
         if (xAtFloor < currFloor.getSizeX()/2) {
-            //left
+            // Drawing left floor:
             Floor leftFloor = activeMap.getPreviousFloor(currFloor);
             Sprite spriteLeft = GraphicManager.getSprite(leftFloor);
             int leftFloorLimit = (int) leftFloor.getFloorLimit();
@@ -95,7 +88,7 @@ public class Camera {
                     centerStartX, height);
             canvas.drawBitmap(spriteLeft.update(), null, bmpLeftRect, paint);
         }else{
-            //right
+            // Drawing right floor
             Floor rightFloor = activeMap.getNextFloor(currFloor);
             Sprite spriteRight = GraphicManager.getSprite(rightFloor);
             int rightFloorLimit = (int) rightFloor.getFloorLimit();
@@ -104,14 +97,47 @@ public class Camera {
             canvas.drawBitmap(spriteRight.update(), null, bmpRightRect, paint);
 
         }
+    }
 
+    private boolean isInsideCameraPlusBuff(float x) {
+        PointF center = activeMap.getActorPos(actorToFollow);
+        return (x >= (center.x - width)) && (x < (center.x + width));
+    }
+
+    /**
+     * Gets a list of all actors in crescent order of their `y` position.
+     * @return
+     */
+    private ArrayList<Actor> getActorRenderList() {
+        ArrayList<Actor> renderList = new ArrayList<Actor>();
+        Iterator<Actor> actorIter = activeMap.getActorListIterator();
+        renderList.add(actorIter.next());
+        while(actorIter.hasNext()) {
+            Actor actorToAdd = actorIter.next();
+            PointF posToAdd = activeMap.getActorPos(actorToAdd);
+            if(isInsideCameraPlusBuff(posToAdd.x)) {
+                int j;
+                for (j = 0; j < renderList.size(); j++) {
+                    Actor actorToCompare = renderList.get(j);
+                    PointF posToCompare = activeMap.getActorPos(actorToCompare);
+                    if (posToCompare.y > posToAdd.y) {
+                        break;
+                    }
+                }
+                renderList.add(j, actorToAdd);
+            }
+        }
+        return renderList;
     }
 
     void drawActors(Canvas canvas, Paint paint) {
         //paint.setColor(Color.TRANSPARENT);
-        ArrayList<Actor> renderList = activeMap.getActorRenderList();
+        ArrayList<Actor> renderList = getActorRenderList();
+        PointF actorToFollowPos = activeMap.getActorPos(actorToFollow);
+        PointF beginDraw = new PointF(actorToFollowPos.x - width / 2,
+                actorToFollowPos.y - height / 2);
         for (Actor actor : renderList) {
-            if(actor.getId().equals("player")) {
+            if(actor.equals(actorToFollow)) {
                 Sprite sprite = GraphicManager.getSprite(actor);
                 PointF pos = activeMap.getActorPos(actor);
                 int left = width/2 - (int) (actor.getWidth() * (width / 320) / 2);
@@ -125,14 +151,13 @@ public class Camera {
                     canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
                 }
             }else{
-                PointF actorToFollowPos = activeMap.getActorPos(actorToFollow);
                 Sprite sprite = GraphicManager.getSprite(actor);
                 PointF pos = activeMap.getActorPos(actor);
-                int left = (int) pos.x - (int) actor.getWidth();
-                left -= (int) actorToFollowPos.x;
-                int top =  (int) pos.y - (int) actor.getHeight();
-                int right = left + (int)actor.getWidth();
-                int bottom = (int) pos.y + (int) actor.getHeight();
+                int left = (int) pos.x - (int) actor.getWidth()/2;
+                left -= (int) beginDraw.x;
+                int top =  (int) pos.y - (int) actor.getHeight()/2;
+                int right = left + (int) actor.getWidth();
+                int bottom = top + (int) actor.getHeight();
                 Rect bmpRect = new Rect(left, top, right, bottom);
                 if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
                     canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
@@ -146,10 +171,6 @@ public class Camera {
 
     void drawControls(Canvas canvas, Paint paint) {
         dPad.Draw(canvas, paint);
-    }
-
-    public int getActorToFollowX() {
-        return (int) activeMap.getActorPos(actorToFollow).x;
     }
 
 }

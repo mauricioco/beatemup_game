@@ -14,10 +14,10 @@ public class LogicManager {
     static public GameMap defaultInstance(Resources resources, int width, int height) {
         Background bg_sky = new Background("sky");
         Floor fl_grass = new Floor("grass", height-180, 320);
-        Floor fl_grass_to_sand = new Floor("grass_to_sand", height-180, 320);
+        Floor fl_grass_to_sand = new Floor("grass_to_sand", height-120, 320);
         Floor fl_sand = new Floor("sand", height-180, 320);
         IActor player = new IActor("player", 32, 32);
-        Actor tree = new IActor("tree", 32, 32);
+        Actor tree = new IActor("tree", 32, 64);
 
         GraphicManager.putSprite(bg_sky, new Sprite(bg_sky, resources, R.drawable.background_sky));
         GraphicManager.putSprite(fl_grass, new Sprite(fl_grass, resources, R.drawable.floor_grass));

@@ -4,6 +4,7 @@ import android.graphics.PointF;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * The world where all other game objects reside.
@@ -46,6 +47,10 @@ public class GameMap extends GameObject {
         return actorsLocation.get(actor);
     }
 
+    public Iterator<Actor> getActorListIterator() {
+        return actorList.iterator();
+    }
+
     public Background getBackground() {
         return background;
     }
@@ -60,31 +65,6 @@ public class GameMap extends GameObject {
 
     public float getWidth() {
         return width;
-    }
-
-    /** TODO
-     * Gets a list of all actors in crescent order of its `y` position.
-     * Warning: ALL ACTORS are in this list. We should get only the ones
-     * currently on-screen.
-     * @return
-     */
-    public ArrayList<Actor> getActorRenderList() {
-        ArrayList<Actor> renderList = new ArrayList<Actor>();
-        renderList.add(actorList.get(0));
-        for(int i=1; i<actorList.size(); i++) {
-            Actor actorToAdd = actorList.get(i);
-            PointF posToAdd = actorsLocation.get(actorToAdd);
-            int j;
-            for(j=0; j<renderList.size(); j++) {
-                Actor actorToCompare = renderList.get(j);
-                PointF posToCompare = actorsLocation.get(actorToCompare);
-                if(posToCompare.y > posToAdd.y) {
-                    break;
-                }
-            }
-            renderList.add(j, actorToAdd);
-        }
-        return renderList;
     }
 
     public Floor getFloorAt(float x) {
@@ -124,9 +104,8 @@ public class GameMap extends GameObject {
     }
 
     public boolean isInsideVertical(float x, float y) {
-        int floorIndex = (int) (x / width);
-        // TODO CHECK FOR EXCEPTION!!
-        return (y >= floorList.get(floorIndex).getFloorLimit()) && (y < height);
+        Floor floor = getFloorAt(x);
+        return (y >= floor.getFloorLimit()) && (y < height);
     }
 
     /*
@@ -158,7 +137,7 @@ public class GameMap extends GameObject {
         PointF actorPos = actorsLocation.get(actor);
 
         PointF newPos = new PointF(actorPos.x + actor.getDx(), actorPos.y);
-        if(isInsideHorizontal(newPos.x)) {
+        if(isInsideHorizontal(newPos.x) && isInsideVertical(newPos.x, newPos.y)) {
             actorPos.x = newPos.x;
         }
 

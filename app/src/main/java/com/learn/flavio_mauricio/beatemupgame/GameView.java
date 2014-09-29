@@ -29,10 +29,13 @@ public class GameView extends SurfaceView {
     public GameView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
 
+        this.setKeepScreenOn(true);
+
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
         GameMap activeMap = LogicManager.defaultInstance(getResources(), metrics.widthPixels, metrics.heightPixels);
 
+        System.out.println(metrics.widthPixels);
         this.camera = new Camera(metrics.widthPixels, metrics.heightPixels,
                 activeMap, activeMap.getPlayer(), getResources());
 
