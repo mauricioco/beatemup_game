@@ -1,13 +1,8 @@
 package com.learn.flavio_mauricio.beatemupgame;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PointF;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -15,13 +10,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import com.learn.flavio_mauricio.beatemupgame.graphic.GraphicManager;
-import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
-import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
 import com.learn.flavio_mauricio.beatemupgame.logic.LogicManager;
-
-import java.util.ArrayList;
 
 /**
  * This is the SurfaceView where the game is rendered in.
@@ -42,7 +32,6 @@ public class GameView extends SurfaceView {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 
         GameMap activeMap = LogicManager.defaultInstance(getResources(), metrics.widthPixels, metrics.heightPixels);
-        Bitmap sprite = BitmapFactory.decodeResource(getResources(), R.drawable.button_dpad);
 
         this.camera = new Camera(metrics.widthPixels, metrics.heightPixels,
                 activeMap, activeMap.getPlayer(), getResources());

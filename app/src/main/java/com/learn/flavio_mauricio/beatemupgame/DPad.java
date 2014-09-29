@@ -10,14 +10,14 @@ import android.graphics.Rect;
  */
 public class DPad {
     private Bitmap bmp;
-    private float posX;
-    private float posY;
+    private int posX;
+    private int posY;
     private float scale;
 
-    public DPad(Bitmap bmp, float x, float y, float scale){
+    public DPad(Bitmap bmp, int x, int y, float scale) {
         this.bmp = bmp;
-        this.posX = 0;
-        this.posY = 0;
+        this.posX = x;
+        this.posY = y;
         this.scale = scale;
     }
 
@@ -58,10 +58,8 @@ public class DPad {
         /* TODO
             find a appropriable place for this method later.
          */
-        //this.posY = canvas.getHeight() - bmp.getHeight()*scale;
-        Rect bmpRect = new Rect((int)posX, (int)posY,
-                (int)posX+(int)(bmp.getWidth()*scale), (int)posY+(int)(bmp.getHeight()*scale));
+        Rect bmpRect = new Rect(posX, posY,
+                posX+(int)(bmp.getWidth()*scale), posY+(int)(bmp.getHeight()*scale));
         canvas.drawBitmap(bmp, null, bmpRect, paint);
-
     }
 }

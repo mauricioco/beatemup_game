@@ -2,10 +2,8 @@ package com.learn.flavio_mauricio.beatemupgame;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 
 /**
  * This is the main activity - the first activity to be executed
@@ -18,10 +16,6 @@ public class GameActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         if(android.os.Build.VERSION.SDK_INT >= 11) {
-            /* TODO
-                Forcing to hide that d*mn action bar. Go away!!
-                We need to test it though...
-            */
             ActionBar killMe = this.getActionBar();
             if(killMe != null) {
                 killMe.hide();

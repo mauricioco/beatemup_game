@@ -11,21 +11,26 @@ import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
  * for the classes in the logic package use.
  */
 public class LogicManager {
-    static public GameMap defaultInstance(Resources resources, float width, float height) {
+    static public GameMap defaultInstance(Resources resources, int width, int height) {
         Background bg_sky = new Background("sky");
-        Floor fl_grass = new Floor("grass", height/2+height/8, 320);
+        Floor fl_grass = new Floor("grass", height-180, 320);
+        Floor fl_grass_to_sand = new Floor("grass_to_sand", height-180, 320);
+        Floor fl_sand = new Floor("sand", height-180, 320);
         IActor player = new IActor("player", 32, 32);
         Actor tree = new IActor("tree", 32, 32);
 
         GraphicManager.putSprite(bg_sky, new Sprite(bg_sky, resources, R.drawable.background_sky));
         GraphicManager.putSprite(fl_grass, new Sprite(fl_grass, resources, R.drawable.floor_grass));
+        GraphicManager.putSprite(fl_grass_to_sand, new Sprite(fl_grass, resources, R.drawable.floor_grass_to_sand));
+        GraphicManager.putSprite(fl_sand, new Sprite(fl_grass, resources, R.drawable.floor_sand));
         GraphicManager.putSprite(tree, new Sprite(tree, resources, R.drawable.tree));
         Sprite playerSprite = new Sprite(player, resources, R.drawable.ic_launcher);
         playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_2);
         playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_3);
+        playerSprite.setMaxUpdatesPerFrame(2);
         GraphicManager.putSprite(player, playerSprite);
 
-        GameMap gameMap = new GameMap("mapTest", bg_sky, 1280, 720);
+        GameMap gameMap = new GameMap("mapTest", bg_sky, fl_grass, 1280, height);
         gameMap.putPlayerAt(player, width-64, height-64);
         gameMap.putActorAt(tree, width, height-52);
         gameMap.putActorAt(tree.clone(), width+128, height-64);
@@ -39,10 +44,9 @@ public class LogicManager {
         gameMap.putActorAt(tree.clone(), width+546, height-12);
 
 
-        gameMap.putFloor(fl_grass);
-        gameMap.putFloor(fl_grass);
-        gameMap.putFloor(fl_grass);
-        gameMap.putFloor(fl_grass);
+        gameMap.putFloor(fl_grass.clone());
+        gameMap.putFloor(fl_grass_to_sand.clone());
+        gameMap.putFloor(fl_sand.clone());
 
         return gameMap;
     }

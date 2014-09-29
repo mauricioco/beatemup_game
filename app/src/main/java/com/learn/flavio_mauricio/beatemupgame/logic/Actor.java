@@ -43,11 +43,6 @@ public class Actor extends GameObject {
         this.dy = speed*dy;
     }
 
-    public Actor changeId(String id) {
-        this.id = id;
-        return this;
-    }
-
     public Actor clone() {
         Actor clone = new Actor(id+"$"+cloneCount, width, height);
         cloneCount++;

@@ -4,7 +4,6 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
@@ -70,7 +69,7 @@ public class Camera {
         PointF actorPos = activeMap.getActorPos(actorToFollow);
         PointF beginDraw = new PointF(actorPos.x - width / 2, actorPos.y - height / 2);
         //PointF centerDraw = new PointF(actorPos.x - width / 2, actorPos.y - height / 2);
-        PointF endDraw = new PointF(beginDraw.x + width, beginDraw.y + height);
+        //PointF endDraw = new PointF(beginDraw.x + width, beginDraw.y + height);
 
         // Center floor draw!
         Floor currFloor = activeMap.getFloorAt(actorPos.x);
@@ -82,7 +81,9 @@ public class Camera {
         int centerFloorLimit = (int) currFloor.getFloorLimit();
         int centerStartX = width/2 - (int)xAtFloor;
         int centerEndX = centerStartX + currFloor.getSizeX();
-        Rect bmpCenterRect = new Rect(centerStartX, centerFloorLimit, centerEndX, height);
+        int centerStartY = centerFloorLimit;
+        int centerEndY = centerStartY + height-centerFloorLimit;
+        Rect bmpCenterRect = new Rect(centerStartX, centerStartY, centerEndX, centerEndY);
         canvas.drawBitmap(spriteCenter.update(), null, bmpCenterRect, paint);
 
         if (xAtFloor < currFloor.getSizeX()/2) {
@@ -114,9 +115,9 @@ public class Camera {
                 Sprite sprite = GraphicManager.getSprite(actor);
                 PointF pos = activeMap.getActorPos(actor);
                 int left = width/2 - (int) (actor.getWidth() * (width / 320) / 2);
-                int top = (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
+                int top = (int)pos.y - (int) actor.getHeight() * (height / 240) / 2;
                 int right = width/2 + (int) actor.getWidth() * (width / 320) / 2;
-                int bottom = (int) pos.y + (int) actor.getHeight() * (height / 240) / 2;
+                int bottom = (int)pos.y + (int) actor.getHeight() * (height / 240) / 2;
                 Rect bmpRect = new Rect(left, top, right, bottom);
                 if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
                     canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
