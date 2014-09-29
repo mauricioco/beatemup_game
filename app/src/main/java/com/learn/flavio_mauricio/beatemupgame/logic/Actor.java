@@ -7,12 +7,12 @@ package com.learn.flavio_mauricio.beatemupgame.logic;
  * TODO callback functions shoud be implemented for these "scripts".
  */
 public class Actor extends GameObject {
-
-    private int width;
-    private int height;
-    private int speed = 5;
-    private float dx = 0;
-    private float dy = 0;
+    protected int width;
+    protected int height;
+    protected int speed = 5;
+    protected float dx = 0;
+    protected float dy = 0;
+    protected int direction = 1;
 
     public Actor(String id, int width, int height) {
         super(id);
