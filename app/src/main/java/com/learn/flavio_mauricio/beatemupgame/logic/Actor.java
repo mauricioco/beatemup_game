@@ -30,6 +30,10 @@ public class Actor extends GameObject {
         return dy;
     }
 
+    public int getSpeed() {
+        return speed;
+    }
+
     public float getWidth() {
         return width;
     }

@@ -1,9 +1,11 @@
-package com.learn.flavio_mauricio.beatemupgame;
+package com.learn.flavio_mauricio.beatemupgame.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import com.learn.flavio_mauricio.beatemupgame.R;
 
 /**
  * This is the main activity - the first activity to be executed

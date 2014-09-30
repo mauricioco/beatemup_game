@@ -1,12 +1,14 @@
-package com.learn.flavio_mauricio.beatemupgame;
+package com.learn.flavio_mauricio.beatemupgame.game;
 
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
+import com.learn.flavio_mauricio.beatemupgame.R;
 import com.learn.flavio_mauricio.beatemupgame.graphic.GraphicManager;
 import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
 import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
@@ -66,10 +68,8 @@ public class Camera {
 
         // Center floor draw:
         Floor currFloor = activeMap.getFloorAt(actorPos.x);
-        float xAtFloor = actorPos.x;    // Getting position relative to the current floor.
-        while(xAtFloor > currFloor.getSizeX()) {
-            xAtFloor -= currFloor.getSizeX();   // TODO only works for maps with equal floors
-        }
+        float xAtFloor = actorPos.x - activeMap.getFloorOffset(currFloor);
+            // Getting position relative to the current floor.
         Sprite spriteCenter = GraphicManager.getSprite(currFloor);
         int centerFloorLimit = (int) currFloor.getFloorLimit();
         int centerStartX = width/2 - (int)xAtFloor;
@@ -167,6 +167,19 @@ public class Camera {
             }
 
         }
+    }
+
+    public PointF getActorToFollowPos() {
+        return activeMap.getActorPos(actorToFollow);
+    }
+
+    public Point getTopLeftCoord() {
+        PointF actorToFollowPos = getActorToFollowPos();
+        return new Point((int)actorToFollowPos.x-width/2, 0);
+    }
+
+    public void startMovingActorToFollowTo(float x, float y) {
+        activeMap.startMovingActorTo(actorToFollow, x, y);
     }
 
     void drawControls(Canvas canvas, Paint paint) {

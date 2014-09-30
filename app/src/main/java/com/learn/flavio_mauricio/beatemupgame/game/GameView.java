@@ -1,8 +1,10 @@
-package com.learn.flavio_mauricio.beatemupgame;
+package com.learn.flavio_mauricio.beatemupgame.game;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -17,6 +19,9 @@ import com.learn.flavio_mauricio.beatemupgame.logic.LogicManager;
  * This is the SurfaceView where the game is rendered in.
  */
 public class GameView extends SurfaceView {
+
+    private boolean CONTROL_METHOD;
+
     private GameThread gameLoopThread;
     private Camera camera;
 
@@ -81,24 +86,47 @@ public class GameView extends SurfaceView {
         this.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                int hat[];
-                switch(motionEvent.getAction()){
-                    case MotionEvent.ACTION_DOWN:
-                        hat = camera.getButtonPressed(motionEvent.getX(), motionEvent.getY());
-                        camera.getActiveMap().getPlayer().setDerivative(hat[0], hat[1]);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        hat = camera.getButtonPressed(motionEvent.getX(), motionEvent.getY());
-                        camera.getActiveMap().getPlayer().setDerivative(hat[0], hat[1]);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        camera.getActiveMap().getPlayer().setDerivative(0, 0);
-                        break;
-                    default:
-                        camera.getActiveMap().getPlayer().setDerivative(0, 0);
-                        break;
+                if(CONTROL_METHOD) {
+                    int hat[];
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            hat = camera.getButtonPressed(motionEvent.getX(), motionEvent.getY());
+                            camera.getActiveMap().getPlayer().setDerivative(hat[0], hat[1]);
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            hat = camera.getButtonPressed(motionEvent.getX(), motionEvent.getY());
+                            camera.getActiveMap().getPlayer().setDerivative(hat[0], hat[1]);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            camera.getActiveMap().getPlayer().setDerivative(0, 0);
+                            break;
+                        default:
+                            camera.getActiveMap().getPlayer().setDerivative(0, 0);
+                            break;
+                    }
+                    return true;
+                }else{
+                    PointF centerCoord = camera.getActorToFollowPos();
+                    Point topLeft = camera.getTopLeftCoord();
+                    int x = (int) (topLeft.x + motionEvent.getX());
+                    int y = (int) (topLeft.y + motionEvent.getY());
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            camera.startMovingActorToFollowTo(x, y - 32);
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            camera.startMovingActorToFollowTo(x, y - 32);
+                            break;
+                        case MotionEvent.ACTION_UP:
+                            camera.getActiveMap().getPlayer().setDerivative(0, 0);
+                            break;
+                        default:
+                            camera.getActiveMap().getPlayer().setDerivative(0, 0);
+                            break;
+                    }
+                    return true;
                 }
-                return true;
+
             }
         });
     }

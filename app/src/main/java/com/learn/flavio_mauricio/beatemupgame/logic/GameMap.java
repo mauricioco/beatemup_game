@@ -92,6 +92,16 @@ public class GameMap extends GameObject {
         return floorList.get(floorList.size()-1);
     }
 
+    public int getFloorOffset(Floor currFloor) {
+        int offset = 0;
+        for(Floor floor : floorList) {
+            if(floor.equals(currFloor))
+                break;
+            offset += floor.getSizeX();
+        }
+        return offset;
+    }
+
 
 
     /**
@@ -148,6 +158,31 @@ public class GameMap extends GameObject {
         }
 
         actorsLocation.put(actor, actorPos);
+    }
+
+    public void startMovingActorTo(Actor actor, float x, float y) {
+        PointF actorPos = actorsLocation.get(actor);
+        float adjCat = x - actorPos.x;
+        float opCat = y - actorPos.y;
+        float hip = (float) Math.sqrt( Math.pow((x-actorPos.x), 2) +
+                Math.pow((y-actorPos.y), 2) );
+
+        float cos = (adjCat)/hip;
+        float sin = (opCat)/hip;
+
+        float newPosX = (actor.getSpeed()*cos) + actorPos.x;
+        float newPosY = (actor.getSpeed()*sin) + actorPos.y;
+
+        // Aparently, detecting if actor reached its destination is not working.
+
+        float newHip = (float) Math.sqrt( Math.pow((newPosX-actorPos.x), 2) +
+                Math.pow((newPosY-actorPos.y), 2) );
+
+        if(newHip > hip) {
+            actor.setDerivative(0,0);
+        }else{
+            actor.setDerivative(cos, sin);
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-package com.learn.flavio_mauricio.beatemupgame;
+package com.learn.flavio_mauricio.beatemupgame.game;
 
 import android.graphics.Canvas;
 
