@@ -3,6 +3,7 @@
     package="com.learn.flavio_mauricio.beatemupgame"
     android:versionCode="1"
     android:versionName="0.1" >
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"

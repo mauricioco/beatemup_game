@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PointF;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
@@ -76,17 +77,18 @@ public class GameView extends SurfaceView {
             }
         });
 
-        this.setListeners();
+        this.setListeners(context);
     }
 
     /**
      * Sets the listeners for the view. So far, only the touch commands
      * for the d-pad are (not fully) implemented.
      */
-    private void setListeners() {
+    private void setListeners(final Context context) {
         this.setOnTouchListener(new OnTouchListener() {
 
             protected boolean gonnaAttack = false;
+            private Vibrator vib = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
             Thread checkAttack = new Thread() {
                 public void run() {
                     while(true) {
@@ -142,12 +144,16 @@ public class GameView extends SurfaceView {
                             gonnaAttack = true;
                             break;
                         case MotionEvent.ACTION_MOVE:
-                            if(!gonnaAttack)
+                            if (!gonnaAttack) {
                                 camera.startMovingActorToFollowTo(x, y - 32);
+                            } else {
+                                vib.vibrate(25);
+                                gonnaAttack = false;
+                            }
                             break;
                         case MotionEvent.ACTION_UP:
                             if(gonnaAttack)
-                                System.out.println("ATTACK!!");
+                                vib.vibrate(25);
                             camera.getActiveMap().getPlayer().setDerivative(0, 0);
                             break;
                         default:
