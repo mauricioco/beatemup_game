@@ -12,6 +12,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
 import com.learn.flavio_mauricio.beatemupgame.logic.LogicManager;
 
@@ -84,9 +85,32 @@ public class GameView extends SurfaceView {
      */
     private void setListeners() {
         this.setOnTouchListener(new OnTouchListener() {
+
+            protected boolean gonnaAttack = false;
+            Thread checkAttack = new Thread() {
+                public void run() {
+                    while(true) {
+                        try {
+                            sleep(25);
+                            if(gonnaAttack) {
+                                sleep(25);
+                                gonnaAttack = false;
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            };
+
+
+
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+
                 if(CONTROL_METHOD) {
+                    if(checkAttack.isAlive())
+                        checkAttack.interrupt();
                     int hat[];
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
@@ -106,18 +130,24 @@ public class GameView extends SurfaceView {
                     }
                     return true;
                 }else{
-                    PointF centerCoord = camera.getActorToFollowPos();
+                    if(!checkAttack.isAlive())
+                        checkAttack.start();
+                    //PointF centerCoord = camera.getActorToFollowPos();
                     Point topLeft = camera.getTopLeftCoord();
                     int x = (int) (topLeft.x + motionEvent.getX());
                     int y = (int) (topLeft.y + motionEvent.getY());
                     switch (motionEvent.getAction()) {
                         case MotionEvent.ACTION_DOWN:
-                            camera.startMovingActorToFollowTo(x, y - 32);
+                            //camera.startMovingActorToFollowTo(x, y - 32);
+                            gonnaAttack = true;
                             break;
                         case MotionEvent.ACTION_MOVE:
-                            camera.startMovingActorToFollowTo(x, y - 32);
+                            if(!gonnaAttack)
+                                camera.startMovingActorToFollowTo(x, y - 32);
                             break;
                         case MotionEvent.ACTION_UP:
+                            if(gonnaAttack)
+                                System.out.println("ATTACK!!");
                             camera.getActiveMap().getPlayer().setDerivative(0, 0);
                             break;
                         default:
@@ -129,6 +159,7 @@ public class GameView extends SurfaceView {
 
             }
         });
+
     }
 
     /**

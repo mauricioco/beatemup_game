@@ -3,6 +3,7 @@ package com.learn.flavio_mauricio.beatemupgame.activity;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.learn.flavio_mauricio.beatemupgame.R;
@@ -50,6 +51,17 @@ public class GameActivity extends Activity {
         }
         System.out.println("wow");
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            finish();
+            System.exit(0);
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
 }
