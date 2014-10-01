@@ -1,4 +1,4 @@
-package com.learn.flavio_mauricio.beatemupgame;
+package com.learn.flavio_mauricio.beatemupgame.game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -13,39 +13,38 @@ import java.sql.SQLOutput;
  */
 public class DPad {
     private Bitmap bmp;
-    private float posX;
-    private float posY;
-    private float scaleX;
-    private float scaleY;
+    private int posX;
+    private int posY;
+    private float size = 200;
 
-    public DPad(Bitmap bmp, float x, float y, float scale, int windowHeight){
+    public DPad(Bitmap bmp, int x, int y, float scale) {
         this.bmp = bmp;
-        this.posX = 0;
-        this.posY = 0;
-        this.scaleY = windowHeight*(scale/100);
-        this.scaleX = (bmp.getWidth()/bmp.getHeight())*scaleY;
-        System.out.println(scaleX);
-        System.out.println(scaleY);
+        this.posX = x;
+        this.posY = y;
+        float scaled = bmp.getWidth() * scale;
+        if (scaled < this.size) {
+            this.size = scale;
+        }
     }
 
     public int[] getButtonPressed(float x, float y) {
         int result[] = {0, 0};
         //DeadZone
-        float splitX = scaleX / 3;
-        float splitY = scaleY / 3;
+        float splitX = size / 3;
+        float splitY = size / 3;
         float deadZoneX[] = {splitX, splitX * 2};
         float deadZoneY[] = {splitY, splitY * 2};
 
         // checking first if touch is inside dpad area...
-        if (x > posX && x < posX + scaleX &&
-                y > posY && y < posY + scaleY) {
+        if (x > posX && x < posX + size &&
+                y > posY && y < posY + size) {
             //Mapping Touchable area
             //Left Button
             if ((x >= posX) && (x <= posX + deadZoneX[0])) {
                 result[0] = -1;
             }
             //Right Button
-            if ((x >= posX + deadZoneX[1]) && (x <= (scaleX + posX))) {
+            if ((x >= posX + deadZoneX[1]) && (x <= (size + posX))) {
                 result[0] = 1;
             }
             //Up Button
@@ -53,7 +52,7 @@ public class DPad {
                 result[1] = -1;
             }
             //Down Button
-            if ((y >= posY + deadZoneY[1]) && (y <= posY + scaleY)) {
+            if ((y >= posY + deadZoneY[1]) && (y <= posY + size)) {
                 result[1] = 1;
             }
         }
@@ -65,10 +64,8 @@ public class DPad {
         /* TODO
             find a appropriable place for this method later.
          */
-        //this.posY = canvas.getHeight() - bmp.getHeight()*scale;
-        Rect bmpRect = new Rect((int)posX, (int)posY,
-                (int)posX+(int)(scaleX), (int)posY+(int)(scaleY));
+        Rect bmpRect = new Rect(posX, posY,
+                posX+(int)(size), posY+(int)(size));
         canvas.drawBitmap(bmp, null, bmpRect, paint);
-
     }
 }

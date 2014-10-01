@@ -16,7 +16,11 @@ public class GraphicManager {
     }
 
     static public Sprite getSprite(GameObject gameObject) {
-        return spriteTable.get(gameObject.getId());
+        String id = gameObject.getId();
+        int indexOfCloneId = id.indexOf("$");
+        if(indexOfCloneId >= 0)
+            id = id.substring(0, indexOfCloneId);
+        return spriteTable.get(id);
     }
 
 }

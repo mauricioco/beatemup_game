@@ -1,4 +1,4 @@
-package com.learn.flavio_mauricio.beatemupgame;
+package com.learn.flavio_mauricio.beatemupgame.game;
 
 import android.graphics.Canvas;
 
@@ -49,7 +49,9 @@ public class GameThread extends Thread {
                     sleep(sleepTime);
                 else
                     sleep(10);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

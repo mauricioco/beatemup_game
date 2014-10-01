@@ -5,7 +5,7 @@ package com.learn.flavio_mauricio.beatemupgame.logic;
  * All other map elements must extend from this class.
  */
 public class GameObject {
-    private String id;
+    protected String id;
 
     public GameObject(String id) {
         this.id = id;

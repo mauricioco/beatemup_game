@@ -25,6 +25,9 @@ public class Sprite {
     private int animIndex = 1;
     private boolean still = false;
 
+    private int maxUpdatesPerFrame = 0;
+    private int updatesPerFrame = 0;
+
     public Sprite(GameObject gameObject, Resources resources, int resourceId) {
         this.bmp = BitmapFactory.decodeResource(resources, resourceId);
         this.gameObject = gameObject;
@@ -38,15 +41,21 @@ public class Sprite {
         bmpAnim.add(BitmapFactory.decodeResource(resources, resourceId));
     }
 
+    public void setMaxUpdatesPerFrame(int maxUpdatesPerFrame) {
+        this.maxUpdatesPerFrame = maxUpdatesPerFrame;
+    }
+
     /**
      * Very crude animation method... but it works!
      * We need to set a timer for when to update the sprite animation.
      * @return
      */
     public Bitmap updateAnim() {
-        if(bmpAnim == null) {
+        if (bmpAnim == null)
             return bmp;
-        }else{
+        updatesPerFrame++;
+        if(updatesPerFrame >= maxUpdatesPerFrame) {
+            updatesPerFrame=0;
             if (still) {
                 still = false;
                 return bmpAnim.get(0);
@@ -59,6 +68,15 @@ public class Sprite {
                 animIndex++;
                 return toRet;
             }
+        }else{
+            if (still) {
+                return bmpAnim.get(0);
+            } else {
+                if (animIndex >= bmpAnim.size())
+                    animIndex = 1;
+                Bitmap toRet = bmpAnim.get(animIndex);
+                return toRet;
+            }
         }
     }
 
@@ -66,11 +84,11 @@ public class Sprite {
         return bmp;
     }
 
-    public int getWidth() {
+    public int getBmpWidth() {
         return bmp.getWidth();
     }
 
-    public int getHeight() {
+    public int getBmpHeight() {
         return bmp.getHeight();
     }
 }

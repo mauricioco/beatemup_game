@@ -1,11 +1,12 @@
-package com.learn.flavio_mauricio.beatemupgame;
+package com.learn.flavio_mauricio.beatemupgame.activity;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
+
+import com.learn.flavio_mauricio.beatemupgame.R;
 
 /**
  * This is the main activity - the first activity to be executed
@@ -18,10 +19,6 @@ public class GameActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         if(android.os.Build.VERSION.SDK_INT >= 11) {
-            /* TODO
-                Forcing to hide that d*mn action bar. Go away!!
-                We need to test it though...
-            */
             ActionBar killMe = this.getActionBar();
             if(killMe != null) {
                 killMe.hide();
@@ -54,6 +51,17 @@ public class GameActivity extends Activity {
         }
         System.out.println("wow");
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)  {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            finish();
+            System.exit(0);
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 
 }

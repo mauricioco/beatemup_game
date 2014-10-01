@@ -5,15 +5,29 @@ package com.learn.flavio_mauricio.beatemupgame.logic;
  */
 public class Floor extends GameObject {
 
-    private float floorLimit;
+    private int floorLimit;
+    private int sizeX;
 
-    public Floor(String id, float floorLimit) {
+    private int cloneCount = 0;
+
+    public Floor(String id, int floorLimit, int sizeX) {
         super(id);
         this.floorLimit = floorLimit;
+        this.sizeX = sizeX;
     }
 
     public float getFloorLimit() {
         return floorLimit;
+    }
+
+    public int getSizeX() {
+        return sizeX;
+    }
+
+    public Floor clone() {
+        Floor clone = new Floor(id+"$"+cloneCount, floorLimit, sizeX);
+        cloneCount++;
+        return clone;
     }
 
 }

@@ -1,5 +1,7 @@
 package com.learn.flavio_mauricio.beatemupgame.logic;
 
+import android.graphics.PointF;
+
 /**
  * Actors are everything that "follow a script" on the game map.
  * Following a script would be simply showing an animation, damage other actors,
@@ -7,12 +9,17 @@ package com.learn.flavio_mauricio.beatemupgame.logic;
  * TODO callback functions shoud be implemented for these "scripts".
  */
 public class Actor extends GameObject {
+    protected int width;
+    protected int height;
+    protected int speed = 5;
+    protected float dx = 0;
+    protected float dy = 0;
+    protected int direction = 1;
+    protected int maxLife;
+    protected int currentLife;
+    protected PointF mask;
 
-    private int width;
-    private int height;
-    private int speed = 5;
-    private float dx = 0;
-    private float dy = 0;
+    private int cloneCount = 0;
 
     public Actor(String id, int width, int height) {
         super(id);
@@ -28,6 +35,14 @@ public class Actor extends GameObject {
         return dy;
     }
 
+    public PointF getMask() {
+        return mask;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
     public float getWidth() {
         return width;
     }
@@ -39,6 +54,12 @@ public class Actor extends GameObject {
     public void setDerivative(float dx, float dy) {
         this.dx = speed*dx;
         this.dy = speed*dy;
+    }
+
+    public Actor clone() {
+        Actor clone = new Actor(id+"$"+cloneCount, width, height);
+        cloneCount++;
+        return clone;
     }
 
 }
