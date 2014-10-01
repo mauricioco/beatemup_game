@@ -31,6 +31,9 @@ public class GameMap extends GameObject {
 
     public void putActorAt(Actor actor, float x, float y) {
         actorList.add(actor);
+        if(actor instanceof EnemyActor){
+            ((EnemyActor) actor).setMap(this);
+        }
         actorsLocation.put(actor, new PointF(x, y));
     }
 
@@ -140,6 +143,9 @@ public class GameMap extends GameObject {
     public void update() {
         for(Actor actor : actorList) {
             updateActorPos(actor);
+            if(actor instanceof EnemyActor){
+                ((EnemyActor) actor).RandomAI(actorsLocation.get(actor), actorsLocation.get(player));
+            }
         }
     }
 
@@ -147,6 +153,11 @@ public class GameMap extends GameObject {
         PointF actorPos = actorsLocation.get(actor);
 
         PointF newPos = new PointF(actorPos.x + actor.getDx(), actorPos.y);
+        if(actor instanceof EnemyActor){
+            if(!isInsideHorizontal(((EnemyActor) actor).getTarget().x) && !isInsideVertical(((EnemyActor) actor).getTarget().x, ((EnemyActor) actor).getTarget().y)){
+                ((EnemyActor) actor).setState(States.Idle);
+            }
+        }
         if(isInsideHorizontal(newPos.x) && isInsideVertical(newPos.x, newPos.y)) {
             actorPos.x = newPos.x;
         }
@@ -185,6 +196,15 @@ public class GameMap extends GameObject {
         }
     }
 
+    public boolean VerifyCollision(Actor actor1, Actor actor2){
+        PointF actPos1 = actorsLocation.get(actor1);
+        PointF actPos2 = actorsLocation.get(actor2);
 
+        PointF mask1 = actor1.getMask();
+        PointF mask2 = actor2.getMask();
+
+
+        return false;
+    }
 
 }

@@ -153,11 +153,11 @@ public class Camera {
             }else{
                 Sprite sprite = GraphicManager.getSprite(actor);
                 PointF pos = activeMap.getActorPos(actor);
-                int left = (int) pos.x - (int) actor.getWidth()/2;
+                int left = (int) pos.x - (int) (actor.getWidth() * (width / 320) / 2);
                 left -= (int) beginDraw.x;
-                int top =  (int) pos.y - (int) actor.getHeight()/2;
-                int right = left + (int) actor.getWidth();
-                int bottom = top + (int) actor.getHeight();
+                int top =  (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
+                int right = left + (int) actor.getWidth() * (width / 320);
+                int bottom = top + (int) actor.getHeight() * (height / 240);
                 Rect bmpRect = new Rect(left, top, right, bottom);
                 if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
                     canvas.drawBitmap(sprite.update(), null, bmpRect, paint);

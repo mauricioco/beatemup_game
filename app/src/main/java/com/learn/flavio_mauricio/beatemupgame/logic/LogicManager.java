@@ -19,7 +19,8 @@ public class LogicManager {
         Floor fl_grass_to_sand = new Floor("grass_to_sand", height-120, width);
         Floor fl_sand = new Floor("sand", height-180, width);
         IActor player = new IActor("player", 32, 32);
-        Actor tree = new Actor("tree", 32, 64);
+        Actor tree = new IActor("tree", 32, 64);
+        EnemyActor enemy1 = new EnemyActor("enemy", 32, 32);
 
         // Binding sprites. Player sprite is the only animated so far:
         GraphicManager.putSprite(bg_sky, new Sprite(bg_sky, resources, R.drawable.background_sky));
@@ -34,6 +35,11 @@ public class LogicManager {
             playerSprite.setMaxUpdatesPerFrame(2);
         }
         GraphicManager.putSprite(player, playerSprite);
+        Sprite enemySprite = new Sprite(player, resources, R.drawable.ic_enemy);
+        enemySprite.addBmpAnim(resources, R.drawable.ic_enemy_2);
+        enemySprite.addBmpAnim(resources, R.drawable.ic_enemy_3);
+        enemySprite.setMaxUpdatesPerFrame(2);
+        GraphicManager.putSprite(enemy1, enemySprite);
 
         // Creating map and putting contents on it:
         GameMap gameMap = new GameMap("mapTest", bg_sky, fl_grass, width*5, height);
@@ -41,6 +47,7 @@ public class LogicManager {
         gameMap.putFloor(fl_grass_to_sand.clone());
         gameMap.putFloor(fl_sand.clone());
         gameMap.putPlayerAt(player, width-64, height-64);
+        gameMap.putActorAt(enemy1, width-10, height-10);
         gameMap.putActorAt(tree, width, height-52);
         gameMap.putActorAt(tree.clone(), width+128, height-64);
         gameMap.putActorAt(tree.clone(), width+12, height-61);
@@ -53,6 +60,7 @@ public class LogicManager {
         gameMap.putActorAt(tree.clone(), width+546, height-12);
         gameMap.putActorAt(tree.clone(64, 128), width*2, height-120-16);
         gameMap.putActorAt(tree.clone(64, 128), width*3, height-120-16);
+
 
         return gameMap;
     }
