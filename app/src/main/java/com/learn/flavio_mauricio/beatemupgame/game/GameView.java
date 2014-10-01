@@ -22,7 +22,7 @@ import com.learn.flavio_mauricio.beatemupgame.logic.LogicManager;
  */
 public class GameView extends SurfaceView {
 
-    private boolean CONTROL_METHOD;
+    private boolean CONTROL_METHOD = true;
 
     private GameThread gameLoopThread;
     private Camera camera;
