@@ -169,6 +169,14 @@ public class Camera {
         }
     }
 
+    void drawControls(Canvas canvas, Paint paint) {
+        dPad.Draw(canvas, paint);
+    }
+
+    void drawHud(Canvas canvas, Paint paint) {
+        canvas.drawText("This will be the hud!!", 0, 25, paint);
+    }
+
     public PointF getActorToFollowPos() {
         return activeMap.getActorPos(actorToFollow);
     }
@@ -182,8 +190,6 @@ public class Camera {
         activeMap.startMovingActorTo(actorToFollow, x, y);
     }
 
-    void drawControls(Canvas canvas, Paint paint) {
-        dPad.Draw(canvas, paint);
-    }
+
 
 }

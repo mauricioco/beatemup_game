@@ -183,8 +183,11 @@ public class GameView extends SurfaceView {
             Element drawing. Currently I know no way to set depth for this,
             so we have to draw them in order.
          */
-        //Paint p = new Paint();
-        //p.setARGB(255,200,128,128);
+        Paint p = new Paint();
+        p.setColor(Color.BLACK);
+        p.setTextSize(20);
+        p.setAntiAlias(true);
+        p.setFilterBitmap(true);
 /*
         p.setColor(Color.RED);
         ColorFilter filter = new LightingColorFilter(Color.RED, 1);
@@ -193,8 +196,9 @@ public class GameView extends SurfaceView {
         camera.drawBackground(canvas, null);
         camera.drawFloor(canvas, null);
         camera.drawActors(canvas, null);
-
-        camera.drawControls(canvas, null);
+        if(GameOptions.controlMethod)
+            camera.drawControls(canvas, null);
+        camera.drawHud(canvas, p);
 
     }
 

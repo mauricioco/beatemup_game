@@ -11,26 +11,35 @@ import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
  * for the classes in the logic package use.
  */
 public class LogicManager {
+
     static public GameMap defaultInstance(Resources resources, int width, int height) {
+        // Creating game objects:
         Background bg_sky = new Background("sky");
         Floor fl_grass = new Floor("grass", height-180, width);
         Floor fl_grass_to_sand = new Floor("grass_to_sand", height-120, width);
         Floor fl_sand = new Floor("sand", height-180, width);
         IActor player = new IActor("player", 32, 32);
-        Actor tree = new IActor("tree", 32, 64);
+        Actor tree = new Actor("tree", 32, 64);
 
+        // Binding sprites. Player sprite is the only animated so far:
         GraphicManager.putSprite(bg_sky, new Sprite(bg_sky, resources, R.drawable.background_sky));
         GraphicManager.putSprite(fl_grass, new Sprite(fl_grass, resources, R.drawable.floor_grass));
         GraphicManager.putSprite(fl_grass_to_sand, new Sprite(fl_grass, resources, R.drawable.floor_grass_to_sand));
         GraphicManager.putSprite(fl_sand, new Sprite(fl_grass, resources, R.drawable.floor_sand));
         GraphicManager.putSprite(tree, new Sprite(tree, resources, R.drawable.tree));
         Sprite playerSprite = new Sprite(player, resources, R.drawable.ic_launcher);
-        playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_2);
-        playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_3);
-        playerSprite.setMaxUpdatesPerFrame(2);
+        {
+            playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_2);
+            playerSprite.addBmpAnim(resources, R.drawable.ic_launcher_3);
+            playerSprite.setMaxUpdatesPerFrame(2);
+        }
         GraphicManager.putSprite(player, playerSprite);
 
+        // Creating map and putting contents on it:
         GameMap gameMap = new GameMap("mapTest", bg_sky, fl_grass, width*5, height);
+        gameMap.putFloor(fl_grass.clone());
+        gameMap.putFloor(fl_grass_to_sand.clone());
+        gameMap.putFloor(fl_sand.clone());
         gameMap.putPlayerAt(player, width-64, height-64);
         gameMap.putActorAt(tree, width, height-52);
         gameMap.putActorAt(tree.clone(), width+128, height-64);
@@ -42,11 +51,8 @@ public class LogicManager {
         gameMap.putActorAt(tree.clone(), width+35, height-44);
         gameMap.putActorAt(tree.clone(), width+1200, height-23);
         gameMap.putActorAt(tree.clone(), width+546, height-12);
-
-
-        gameMap.putFloor(fl_grass.clone());
-        gameMap.putFloor(fl_grass_to_sand.clone());
-        gameMap.putFloor(fl_sand.clone());
+        gameMap.putActorAt(tree.clone(64, 128), width*2, height-120-16);
+        gameMap.putActorAt(tree.clone(64, 128), width*3, height-120-16);
 
         return gameMap;
     }

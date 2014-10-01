@@ -4,7 +4,6 @@ package com.learn.flavio_mauricio.beatemupgame.logic;
  * Actors are everything that "follow a script" on the game map.
  * Following a script would be simply showing an animation, damage other actors,
  * bre pickable... etc.
- * TODO callback functions shoud be implemented for these "scripts".
  */
 public class Actor extends GameObject {
 
@@ -42,12 +41,26 @@ public class Actor extends GameObject {
         return height;
     }
 
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
     public void setDerivative(float dx, float dy) {
         this.dx = speed*dx;
         this.dy = speed*dy;
     }
 
     public Actor clone() {
+        Actor clone = new Actor(id+"$"+cloneCount, width, height);
+        cloneCount++;
+        return clone;
+    }
+
+    public Actor clone(int width, int height) {
         Actor clone = new Actor(id+"$"+cloneCount, width, height);
         cloneCount++;
         return clone;
