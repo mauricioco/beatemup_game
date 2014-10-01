@@ -13,7 +13,6 @@ public class Actor extends GameObject {
     protected float dx = 0;
     protected float dy = 0;
     protected int direction = 1;
-
     private int cloneCount = 0;
 
     public Actor(String id, int width, int height) {
