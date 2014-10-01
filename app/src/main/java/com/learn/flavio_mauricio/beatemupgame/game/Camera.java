@@ -64,7 +64,7 @@ public class Camera {
     }
 
     void drawFloor(Canvas canvas, Paint paint) {
-        PointF actorPos = activeMap.getActorPos(actorToFollow);
+        PointF actorPos = actorToFollow.getPosition();
 
         // Center floor draw:
         Floor currFloor = activeMap.getFloorAt(actorPos.x);
@@ -100,7 +100,7 @@ public class Camera {
     }
 
     private boolean isInsideCameraPlusBuff(float x) {
-        PointF center = activeMap.getActorPos(actorToFollow);
+        PointF center = actorToFollow.getPosition();
         return (x >= (center.x - width)) && (x < (center.x + width));
     }
 
@@ -114,12 +114,12 @@ public class Camera {
         renderList.add(actorIter.next());
         while(actorIter.hasNext()) {
             Actor actorToAdd = actorIter.next();
-            PointF posToAdd = activeMap.getActorPos(actorToAdd);
+            PointF posToAdd = actorToAdd.getPosition();
             if(isInsideCameraPlusBuff(posToAdd.x)) {
                 int j;
                 for (j = 0; j < renderList.size(); j++) {
                     Actor actorToCompare = renderList.get(j);
-                    PointF posToCompare = activeMap.getActorPos(actorToCompare);
+                    PointF posToCompare = actorToCompare.getPosition();
                     if (posToCompare.y > posToAdd.y) {
                         break;
                     }
@@ -133,13 +133,13 @@ public class Camera {
     void drawActors(Canvas canvas, Paint paint) {
         //paint.setColor(Color.TRANSPARENT);
         ArrayList<Actor> renderList = getActorRenderList();
-        PointF actorToFollowPos = activeMap.getActorPos(actorToFollow);
+        PointF actorToFollowPos = actorToFollow.getPosition();
         PointF beginDraw = new PointF(actorToFollowPos.x - width / 2,
                 actorToFollowPos.y - height / 2);
         for (Actor actor : renderList) {
             if(actor.equals(actorToFollow)) {
                 Sprite sprite = GraphicManager.getSprite(actor);
-                PointF pos = activeMap.getActorPos(actor);
+                PointF pos = actor.getPosition();
                 int left = width/2 - (int) (actor.getWidth() * (width / 320) / 2);
                 int top = (int)pos.y - (int) actor.getHeight() * (height / 240) / 2;
                 int right = width/2 + (int) actor.getWidth() * (width / 320) / 2;
@@ -152,7 +152,7 @@ public class Camera {
                 }
             }else{
                 Sprite sprite = GraphicManager.getSprite(actor);
-                PointF pos = activeMap.getActorPos(actor);
+                PointF pos = actor.getPosition();
                 int left = (int) pos.x - (int) (actor.getWidth() * (width / 320) / 2);
                 left -= (int) beginDraw.x;
                 int top =  (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
@@ -178,7 +178,7 @@ public class Camera {
     }
 
     public PointF getActorToFollowPos() {
-        return activeMap.getActorPos(actorToFollow);
+        return actorToFollow.getPosition();
     }
 
     public Point getTopLeftCoord() {

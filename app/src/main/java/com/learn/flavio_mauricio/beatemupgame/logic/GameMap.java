@@ -1,9 +1,9 @@
 package com.learn.flavio_mauricio.beatemupgame.logic;
 
 import android.graphics.PointF;
+import android.graphics.Rect;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 
 /**
@@ -16,7 +16,6 @@ public class GameMap extends GameObject {
     private IActor player = null;
     private ArrayList<Actor> actorList;  // list of existing actors
     private ArrayList<Floor> floorList;
-    private Hashtable<Actor, PointF> actorsLocation;    // hashtable where each actor is mapped to its current position.
 
     public GameMap(String id, Background background, Floor floor, int width, int height) {
         super(id);
@@ -26,28 +25,22 @@ public class GameMap extends GameObject {
         this.actorList = new ArrayList<Actor>();
         this.floorList = new ArrayList<Floor>();
         this.floorList.add(floor);
-        this.actorsLocation = new Hashtable<Actor, PointF>();
     }
 
-    public void putActorAt(Actor actor, float x, float y) {
+    public void putActor(Actor actor) {
         actorList.add(actor);
         if(actor instanceof EnemyActor){
             ((EnemyActor) actor).setMap(this);
         }
-        actorsLocation.put(actor, new PointF(x, y));
     }
 
-    public void putPlayerAt(IActor player, float x, float y) {
+    public void putPlayer(IActor player) {
         this.player = player;
-        this.putActorAt(player, x, y);
+        this.putActor(player);
     }
 
     public void putFloor(Floor floor) {
         floorList.add(floor);
-    }
-
-    public PointF getActorPos(Actor actor) {
-        return actorsLocation.get(actor);
     }
 
     public Iterator<Actor> getActorListIterator() {
@@ -144,13 +137,13 @@ public class GameMap extends GameObject {
         for(Actor actor : actorList) {
             updateActorPos(actor);
             if(actor instanceof EnemyActor){
-                ((EnemyActor) actor).RandomAI(actorsLocation.get(actor), actorsLocation.get(player));
+                ((EnemyActor) actor).RandomAI(player);
             }
         }
     }
 
     private void updateActorPos(Actor actor) {
-        PointF actorPos = actorsLocation.get(actor);
+        PointF actorPos = actor.getPosition();
 
         PointF newPos = new PointF(actorPos.x + actor.getDx(), actorPos.y);
         if(actor instanceof EnemyActor){
@@ -168,11 +161,11 @@ public class GameMap extends GameObject {
             actorPos.y = newPos.y;
         }
 
-        actorsLocation.put(actor, actorPos);
+        actor.setPosition(actorPos.x, actorPos.y);
     }
 
     public void startMovingActorTo(Actor actor, float x, float y) {
-        PointF actorPos = actorsLocation.get(actor);
+        PointF actorPos = actor.getPosition();
         float adjCat = x - actorPos.x;
         float opCat = y - actorPos.y;
         float hip = (float) Math.sqrt( Math.pow((x-actorPos.x), 2) +
@@ -197,14 +190,10 @@ public class GameMap extends GameObject {
     }
 
     public boolean VerifyCollision(Actor actor1, Actor actor2){
-        PointF actPos1 = actorsLocation.get(actor1);
-        PointF actPos2 = actorsLocation.get(actor2);
+        Rect actMask1 = actor1.getMask();
+        Rect actMask2 = actor2.getMask();
 
-        PointF mask1 = actor1.getMask();
-        PointF mask2 = actor2.getMask();
-
-
-        return false;
+        return actMask1.intersect(actMask2);
     }
 
 }

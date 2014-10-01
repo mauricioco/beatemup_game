@@ -5,8 +5,8 @@ package com.learn.flavio_mauricio.beatemupgame.logic;
  */
 public class IActor extends Actor {
 
-    public IActor(String id, int width, int height) {
-        super(id, width, height);
+    public IActor(String id, int x, int y, int width, int height) {
+        super(id, x, y, width, height);
     }
 
 }

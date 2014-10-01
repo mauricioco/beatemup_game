@@ -15,7 +15,7 @@ public class DPad {
     private Bitmap bmp;
     private int posX;
     private int posY;
-    private float size = 200;
+    private float size = 250;
 
     public DPad(Bitmap bmp, int x, int y, float scale) {
         this.bmp = bmp;

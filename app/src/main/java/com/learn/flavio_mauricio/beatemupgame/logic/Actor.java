@@ -1,6 +1,8 @@
 package com.learn.flavio_mauricio.beatemupgame.logic;
 
+import android.graphics.Point;
 import android.graphics.PointF;
+import android.graphics.Rect;
 
 /**
  * Actors are everything that "follow a script" on the game map.
@@ -10,18 +12,20 @@ import android.graphics.PointF;
 public class Actor extends GameObject {
     protected int width;
     protected int height;
-    protected int speed = 5;
+    protected PointF position;
+    protected int speed = 4;
     protected float dx = 0;
     protected float dy = 0;
     protected int direction = 1;
     protected int maxLife;
     protected int currentLife;
-    protected PointF mask;
+    protected Rect mask;
 
     private int cloneCount = 0;
 
-    public Actor(String id, int width, int height) {
+    public Actor(String id, int x, int y, int width, int height) {
         super(id);
+        this.position = new PointF(x, y);
         this.width = width;
         this.height = height;
     }
@@ -34,8 +38,36 @@ public class Actor extends GameObject {
         return dy;
     }
 
-    public PointF getMask() {
+    public Rect getMask() {
         return mask;
+    }
+
+    public void setMask(float widthRate, float heightRate) {
+        this.mask = new Rect(0, 0, (int) widthRate * width, (int) heightRate * height);
+    }
+
+    public PointF getPosition() {
+        return position;
+    }
+
+    public float getPositionX() {
+        return position.x;
+    }
+
+    public float getPositionY() {
+        return position.y;
+    }
+
+    public void setPosition(float x, float y) {
+        this.position = new PointF(x, y);
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 
     public int getSpeed() {
@@ -63,14 +95,14 @@ public class Actor extends GameObject {
         this.dy = speed*dy;
     }
 
-    public Actor clone() {
-        Actor clone = new Actor(id+"$"+cloneCount, width, height);
+    public Actor clone(int x, int y) {
+        Actor clone = new Actor(id+"$"+cloneCount, x, y, width, height);
         cloneCount++;
         return clone;
     }
 
-    public Actor clone(int width, int height) {
-        Actor clone = new Actor(id+"$"+cloneCount, width, height);
+    public Actor clone(int x, int y, int width, int height) {
+        Actor clone = new Actor(id+"$"+cloneCount, x, y, width, height);
         cloneCount++;
         return clone;
     }
