@@ -23,7 +23,7 @@ public class DPad {
         this.posY = y;
         float scaled = bmp.getWidth() * scale;
         if (scaled < this.size) {
-            this.size = scale;
+            this.size = scaled;
         }
     }
 
