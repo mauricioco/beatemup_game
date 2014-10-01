@@ -3,12 +3,8 @@ package com.learn.flavio_mauricio.beatemupgame.graphic;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.DisplayMetrics;
 
-import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
-import com.learn.flavio_mauricio.beatemupgame.logic.Background;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameObject;
-import com.learn.flavio_mauricio.beatemupgame.logic.IActor;
 
 import java.util.ArrayList;
 
@@ -47,8 +43,7 @@ public class Sprite {
 
     /**
      * Very crude animation method... but it works!
-     * We need to set a timer for when to update the sprite animation.
-     * @return
+     * @return the bmp of an animation frame
      */
     public Bitmap updateAnim() {
         if (bmpAnim == null)
@@ -74,8 +69,7 @@ public class Sprite {
             } else {
                 if (animIndex >= bmpAnim.size())
                     animIndex = 1;
-                Bitmap toRet = bmpAnim.get(animIndex);
-                return toRet;
+                return bmpAnim.get(animIndex);
             }
         }
     }

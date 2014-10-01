@@ -2,9 +2,10 @@
 <resources>
 
     <string name="app_name">Beatemup Game</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="title_activity_main">Beatemup Game ALPHA</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_activity_main">Beatemup Game</string>
+    <string name="text_header_mainmenu">Main (and only) Menu</string>
+    <string name="text_start">Start!</string>
+    <string name="text_settings">Set the Settings!</string>
+    <string name="text_quit">Quit...</string>
 
 </resources>
