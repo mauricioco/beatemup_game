@@ -1,5 +1,7 @@
 package com.learn.flavio_mauricio.beatemupgame.logic;
 
+import android.graphics.PointF;
+
 /**
  * Actors are everything that "follow a script" on the game map.
  * Following a script would be simply showing an animation, damage other actors,
@@ -13,6 +15,10 @@ public class Actor extends GameObject {
     protected float dx = 0;
     protected float dy = 0;
     protected int direction = 1;
+    protected int maxLife;
+    protected int currentLife;
+    protected PointF mask;
+
     private int cloneCount = 0;
 
     public Actor(String id, int width, int height) {
@@ -27,6 +33,10 @@ public class Actor extends GameObject {
 
     public float getDy() {
         return dy;
+    }
+
+    public PointF getMask() {
+        return mask;
     }
 
     public int getSpeed() {

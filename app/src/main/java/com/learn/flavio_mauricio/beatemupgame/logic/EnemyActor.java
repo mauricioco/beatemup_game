@@ -44,30 +44,48 @@ public class EnemyActor extends Actor{
     private Random random = new Random();
     private States state = States.Idle;
     private Point target;
+    private GameMap map;
 
     public EnemyActor(String id, int width, int height){
         super(id, width, height);
         target = new Point(0, 0);
     }
 
-    public Point RandomAI(Point position, Point player){
-        if (random.nextInt(100) <= 5) {
+    public void setMap(GameMap map) {
+        this.map = map;
+    }
+
+    public Point getTarget() {
+        return target;
+    }
+
+    public Point RandomAI(PointF position, PointF player){
+        if (random.nextInt(100) <= 1) {
+            System.out.println("Perdeu Playboy");
             state = States.Idle;
+
         }
 
         if (state == States.Idle){
+            System.out.println("Idle");
+            this.target.x = random.nextInt((int) map.getWidth());
+            int start = (int) map.getFloorAt(target.x).getFloorLimit();
+            this.target.y = start + random.nextInt((int) (map.getHeight() - start));
             setDerivative(0, 0);
             state = state.getState(random.nextInt(States.getSize()));
         }else{
             switch(state.getId()){
                 case 1:
+                    System.out.println("Moving");
                     target.set(30, 40);
                     Move(position);
                     return null;
                 case 2:
+                    System.out.println("Chasing");
                     Chase(position, player);
                     return null;
                 case 3:
+                    System.out.println("Chasing");
                     return Attack(position, player);
                 default:
                     state = state.getState(random.nextInt(States.getSize()));
@@ -78,20 +96,31 @@ public class EnemyActor extends Actor{
         return null;
     }
 
-    public void Move(Point position) {
+    public void Move(PointF position) {
         if (position.equals(target)){
             state = States.Idle;
         }else{
-            int diffX = target.x - position.x;
-            int directionX = diffX/Math.abs(diffX);
+            int diffX = (int) (target.x - position.x);
+            int directionX;
+            if (diffX != 0) {
+                directionX = diffX / Math.abs(diffX);
+            } else {
+                directionX = 0;
+            }
+
             if (Math.abs(diffX) < speed) {
                 dx = diffX;
             } else {
                 dx = speed*directionX;
             }
 
-            int diffY = target.y - position.y;
-            int directionY = diffY/Math.abs(diffY);
+            int diffY = (int) (target.y - position.y);
+            int directionY;
+            if(diffY != 0){
+                directionY = diffY/Math.abs(diffY);
+            } else {
+                directionY = 0;
+            }
             if(Math.abs(diffY) < this.speed){
                 dy = diffY;
             }else{
@@ -100,38 +129,47 @@ public class EnemyActor extends Actor{
         }
     }
 
-    public void Chase(Point position, Point player) {
-        if (player.y == position.y){
-            if(Math.abs(player.x - position.x) <= width){
-                state = States.Attacking;
-            } else {
-                int direction = (player.x - position.x)/Math.abs(player.x - position.x);
-                setDerivative(speed*direction, 0);
-            }
+    public void Chase(PointF position, PointF player) {
+        if (position.equals(player)){
+            state = States.Idle;
         }else{
-            int diffX = player.x - position.x;
-            int directionX = diffX/Math.abs(diffX);
+            int diffX = (int) (player.x - position.x);
+            int directionX;
+            if (diffX != 0) {
+                directionX = diffX / Math.abs(diffX);
+            } else {
+                directionX = 0;
+            }
+
             if (Math.abs(diffX) < speed) {
                 dx = diffX;
             } else {
-                int diffY = target.y - position.y;
-                int directionY = diffY/Math.abs(diffY);
-                if(Math.abs(diffY) < this.speed){
-                    dy = diffY;
-                }else{
-                    dy = speed*directionY;
-                }
-                if(Math.abs(player.x - position.x) > width){
-                    int direction = (player.x - position.x)/Math.abs(player.x - position.x);
-                    dx = speed*direction;
-                }
+                dx = speed*directionX;
+            }
+
+            int diffY = (int) (player.y - position.y);
+            int directionY;
+            if(diffY != 0){
+                directionY = diffY/Math.abs(diffY);
+            } else {
+                directionY = 0;
+            }
+            if(Math.abs(diffY) < this.speed){
+                dy = diffY;
+            }else{
+                dy = speed*directionY;
             }
         }
     }
 
-    public Point Attack(Point position, Point player) {
-        int direction = (player.x - position.x)/Math.abs(player.x - position.x);
+    public Point Attack(PointF position, PointF player) {
+        int direction = (int) ((player.x - position.x)/Math.abs(player.x - position.x));
         return null;
+    }
+
+    public void setState(States state){
+        System.out.println("Change");
+        this.state = state;
     }
 
 }
