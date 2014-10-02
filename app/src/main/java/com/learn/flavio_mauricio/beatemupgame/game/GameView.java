@@ -3,8 +3,6 @@ package com.learn.flavio_mauricio.beatemupgame.game;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Vibrator;
@@ -15,6 +13,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
+import com.learn.flavio_mauricio.beatemupgame.logic.ActorState;
+import com.learn.flavio_mauricio.beatemupgame.logic.EnemyActor;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
 import com.learn.flavio_mauricio.beatemupgame.logic.LogicManager;
 
@@ -89,21 +90,8 @@ public class GameView extends SurfaceView {
 
             protected boolean gonnaAttack = false;
             private Vibrator vib = (Vibrator) context.getSystemService(context.VIBRATOR_SERVICE);
-            Thread checkAttack = new Thread() {
-                public void run() {
-                    try {
-                        while(true) {
-                            sleep(25);
-                            if (gonnaAttack) {
-                                sleep(25);
-                                gonnaAttack = false;
-                            }
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
+            private int xPress = 0;
+            private int yPress = 0;
 
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -116,16 +104,16 @@ public class GameView extends SurfaceView {
             }
 
             private boolean dPadMove(MotionEvent motionEvent) {
-                if(checkAttack.isAlive())
-                    checkAttack.interrupt();
-                int hat[];
+                int hat[] = camera.getButtonPressed(motionEvent.getX(), motionEvent.getY());
+                if(hat[0]==0 && hat[1]==0) {
+                    camera.getActiveMap().getPlayer().setState(ActorState.Attacking);
+                    //System.out.println("Attacked");
+                }
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        hat = camera.getButtonPressed(motionEvent.getX(), motionEvent.getY());
                         camera.getActiveMap().getPlayer().setDerivative(hat[0], hat[1]);
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        hat = camera.getButtonPressed(motionEvent.getX(), motionEvent.getY());
                         camera.getActiveMap().getPlayer().setDerivative(hat[0], hat[1]);
                         break;
                     case MotionEvent.ACTION_UP:
@@ -139,28 +127,37 @@ public class GameView extends SurfaceView {
             }
 
             private boolean touchMove(MotionEvent motionEvent) {
-                if(!checkAttack.isAlive())
-                    checkAttack.start();
                 Point topLeft = camera.getTopLeftCoord();
                 int x = (int) (topLeft.x + motionEvent.getX());
                 int y = (int) (topLeft.y + motionEvent.getY());
                 switch (motionEvent.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         //camera.startMovingActorToFollowTo(x, y - 32);
+                        xPress = (int) motionEvent.getX();
+                        yPress = (int) motionEvent.getY();
                         gonnaAttack = true;
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (!gonnaAttack) {
                             camera.startMovingActorToFollowTo(x, y - 32);
-                        } else {
-                            vib.vibrate(25);
+                        } else if (Math.abs(motionEvent.getX() - xPress) > 8) {
                             gonnaAttack = false;
                         }
                         break;
                     case MotionEvent.ACTION_UP:
-                        if(gonnaAttack)
+
+                        if(gonnaAttack) {
                             vib.vibrate(25);
-                        camera.getActiveMap().getPlayer().setDerivative(0, 0);
+                            camera.getActiveMap().getPlayer().setDerivative(0, 0);
+                            if(motionEvent.getX() < camera.getWidth()/2)
+                                camera.getActiveMap().getPlayer().setDirection(-1);
+                            else
+                                camera.getActiveMap().getPlayer().setDirection(1);
+                            camera.getActiveMap().getPlayer().setState(ActorState.Attacking);
+                        }else{
+                            camera.getActiveMap().getPlayer().setDerivative(0, 0);
+                        }
+
                         break;
                     default:
                         camera.getActiveMap().getPlayer().setDerivative(0, 0);

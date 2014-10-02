@@ -1,104 +1,81 @@
 package com.learn.flavio_mauricio.beatemupgame.logic;
 
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 
-import com.learn.flavio_mauricio.beatemupgame.graphic.GraphicManager;
-
 import java.util.Random;
-
-enum States {
-    Idle(0),
-    Moving(1),
-    Chasing(2),
-    Attacking(3);
-
-    private final int id;
-    private static int size = 4;
-
-    States(int value) {
-        this.id = value;
-    }
-
-    public States getState(int value){
-        for(States st : States.values()){
-            if (value == st.id){
-                return st;
-            }
-        }
-        return null;
-    }
-
-    public int getId(){
-        return id;
-    }
-
-    public static int getSize(){
-        return size;
-    }
-
-}
 
 public class EnemyActor extends Actor{
     private Random random = new Random();
-    private States state = States.Idle;
     private Point target;
-    private GameMap map;
 
     public EnemyActor(String id, int width, int height){
         super(id, width, height);
         target = new Point(0, 0);
-    }
-
-    public void setMap(GameMap map) {
-        this.map = map;
+        this.speed = 3.f;
+        this.currentLife = 5;
     }
 
     public Point getTarget() {
         return target;
     }
 
-    public Point RandomAI(PointF position, PointF player){
-        if (random.nextInt(100) <= 1) {
-            System.out.println("Perdeu Playboy");
-            state = States.Idle;
+    public boolean onHoldEnd() {
+        this.state = state.getState(random.nextInt(4));
+        return true;
+    }
 
+    public boolean ai() {
+
+        PointF position = currentMap.getActorPos(this);
+        Actor playerActor = currentMap.getPlayer();
+        PointF player = currentMap.getActorPos(playerActor);
+
+        if(position.x < player.x) {
+            this.direction=1;
+        }else{
+            this.direction=-1;
         }
 
-        if (state == States.Idle){
-            System.out.println("Idle");
-            this.target.x = random.nextInt((int) map.getWidth());
-            int start = (int) map.getFloorAt(target.x).getFloorLimit();
-            this.target.y = start + random.nextInt((int) (map.getHeight() - start));
+        if (random.nextInt(100) <= 1) {
+            //System.out.println("Perdeu Playboy");
+            state = ActorState.Idle;
+        }
+
+        if (state == ActorState.Idle){
+            //System.out.println("Idle");
+            this.target.x = random.nextInt((int) currentMap.getWidth());
+            int start = (int) currentMap.getFloorAt(target.x).getFloorLimit();
+            this.target.y = start + random.nextInt((int) (currentMap.getHeight() - start));
             setDerivative(0, 0);
-            state = state.getState(random.nextInt(States.getSize()));
+            state = state.getState(random.nextInt(4));
         }else{
             switch(state.getId()){
                 case 1:
-                    System.out.println("Moving");
+                    //System.out.println("Moving");
                     target.set(30, 40);
-                    Move(position);
-                    return null;
+                    setMoving(position);
+                    return true;
                 case 2:
-                    System.out.println("Chasing");
-                    Chase(position, player);
-                    return null;
+                    //System.out.println("Chasing");
+                    setChasing(position, player);
+                    return true;
                 case 3:
-                    System.out.println("Chasing");
-                    return Attack(position, player);
+                    System.out.println("Tried to attack");
+                    state = ActorState.Attacking;
+                    return true;
                 default:
-                    state = state.getState(random.nextInt(States.getSize()));
-                    return null;
+                    state = state.getState(random.nextInt(4));
+                    return true;
             }
         }
 
-        return null;
+        return false;
     }
 
-    public void Move(PointF position) {
+    public void setMoving(PointF position) {
         if (position.equals(target)){
-            state = States.Idle;
+            state = ActorState.Idle;
         }else{
             int diffX = (int) (target.x - position.x);
             int directionX;
@@ -129,10 +106,12 @@ public class EnemyActor extends Actor{
         }
     }
 
-    public void Chase(PointF position, PointF player) {
-        if (position.equals(player)){
-            state = States.Idle;
+    public void setChasing(PointF position, PointF player) {
+        if (Math.abs(position.x - player.x) < 32) {
+            state = ActorState.Idle;
         }else{
+            currentMap.startMovingActorTo(this, player.x, player.y);
+            /*
             int diffX = (int) (player.x - position.x);
             int directionX;
             if (diffX != 0) {
@@ -159,17 +138,8 @@ public class EnemyActor extends Actor{
             }else{
                 dy = speed*directionY;
             }
+            */
         }
-    }
-
-    public Point Attack(PointF position, PointF player) {
-        int direction = (int) ((player.x - position.x)/Math.abs(player.x - position.x));
-        return null;
-    }
-
-    public void setState(States state){
-        System.out.println("Change");
-        this.state = state;
     }
 
 }

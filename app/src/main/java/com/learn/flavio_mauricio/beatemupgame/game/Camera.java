@@ -3,6 +3,9 @@ package com.learn.flavio_mauricio.beatemupgame.game;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -12,6 +15,8 @@ import com.learn.flavio_mauricio.beatemupgame.R;
 import com.learn.flavio_mauricio.beatemupgame.graphic.GraphicManager;
 import com.learn.flavio_mauricio.beatemupgame.graphic.Sprite;
 import com.learn.flavio_mauricio.beatemupgame.logic.Actor;
+import com.learn.flavio_mauricio.beatemupgame.logic.ActorState;
+import com.learn.flavio_mauricio.beatemupgame.logic.EnemyActor;
 import com.learn.flavio_mauricio.beatemupgame.logic.Floor;
 import com.learn.flavio_mauricio.beatemupgame.logic.GameMap;
 
@@ -131,7 +136,12 @@ public class Camera {
     }
 
     void drawActors(Canvas canvas, Paint paint) {
-        //paint.setColor(Color.TRANSPARENT);
+        // Paint for attacked actor
+        Paint p = new Paint();
+        p.setColor(Color.RED);
+        ColorFilter filter = new LightingColorFilter(Color.RED, 1);
+        p.setColorFilter(filter);
+
         ArrayList<Actor> renderList = getActorRenderList();
         PointF actorToFollowPos = activeMap.getActorPos(actorToFollow);
         PointF beginDraw = new PointF(actorToFollowPos.x - width / 2,
@@ -146,9 +156,17 @@ public class Camera {
                 int bottom = (int)pos.y + (int) actor.getHeight() * (height / 240) / 2;
                 Rect bmpRect = new Rect(left, top, right, bottom);
                 if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
-                    canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+                    if(actor.getState() == ActorState.Attacked) {
+                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
+                    }else{
+                        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+                    }
                 } else {  // is animated
-                    canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+                    if(actor.getState() == ActorState.Attacked) {
+                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
+                    }else{
+                        canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+                    }
                 }
             }else{
                 Sprite sprite = GraphicManager.getSprite(actor);
@@ -160,9 +178,17 @@ public class Camera {
                 int bottom = top + (int) actor.getHeight() * (height / 240);
                 Rect bmpRect = new Rect(left, top, right, bottom);
                 if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
-                    canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+                    if(actor.getState() == ActorState.Attacked) {
+                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
+                    }else{
+                        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+                    }
                 } else {  // is animated
-                    canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+                    if(actor.getState() == ActorState.Attacked) {
+                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
+                    }else{
+                        canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+                    }
                 }
             }
 
@@ -188,6 +214,14 @@ public class Camera {
 
     public void startMovingActorToFollowTo(float x, float y) {
         activeMap.startMovingActorTo(actorToFollow, x, y);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
 

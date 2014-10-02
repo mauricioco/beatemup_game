@@ -8,22 +8,38 @@ import android.graphics.PointF;
  * bre pickable... etc.
  */
 public class Actor extends GameObject {
+    // Sizes
     protected int width;
     protected int height;
-    protected int speed = 5;
+
+    // Mask is a square centered on the actor used to detect collision.
+    protected PointF mask;
+
+    // Movement and knowledge:
+    protected float speed = 5;
     protected float dx = 0;
     protected float dy = 0;
     protected int direction = 1;
-    protected int maxLife;
-    protected int currentLife;
-    protected PointF mask;
+    protected GameMap currentMap;
 
+    // Actor states - it says if it`s moving, attacking, etc.
+    protected ActorState state = ActorState.Idle;
+    protected int holdTime = -1;
+
+    // Stats:
+    protected boolean indestructible = true;
+    protected int maxLife = 3;
+    protected int currentLife = 3;
+
+    // Number of clones so instances won`t repeat.
     private int cloneCount = 0;
 
     public Actor(String id, int width, int height) {
         super(id);
         this.width = width;
         this.height = height;
+        this.mask = new PointF(width/2-width/4, height/2-height/4);
+            // default mask
     }
 
     public float getDx() {
@@ -38,8 +54,27 @@ public class Actor extends GameObject {
         return mask;
     }
 
-    public int getSpeed() {
+    public PointF getMaskBegin(GameMap map) {
+        PointF actorPos = map.getActorPos(this);
+        return new PointF(actorPos.x-mask.x, actorPos.y-mask.y);
+
+    }
+
+    public PointF getMaskEnd(GameMap map) {
+        PointF actorPos = map.getActorPos(this);
+        return new PointF(actorPos.x+mask.x, actorPos.y+mask.y);
+    }
+
+    public float getSpeed() {
         return speed;
+    }
+
+    public PointF getPositionOnMap(GameMap map) {
+        return map.getActorPos(this);
+    }
+
+    public int getDirection() {
+        return direction;
     }
 
     public float getWidth() {
@@ -48,6 +83,23 @@ public class Actor extends GameObject {
 
     public float getHeight() {
         return height;
+    }
+
+    public ActorState getState() {
+        return state;
+    }
+
+    public boolean isOnHold() {
+        return holdTime > 0;
+    }
+
+    public boolean isHoldEnded() {
+        return holdTime == 0;
+    }
+
+    public int decreaseCurrentLife(int d) {
+        this.currentLife -= d;
+        return this.currentLife;
     }
 
     public void setWidth(int width) {
@@ -61,6 +113,52 @@ public class Actor extends GameObject {
     public void setDerivative(float dx, float dy) {
         this.dx = speed*dx;
         this.dy = speed*dy;
+
+        if(dx > 0)
+            this.direction = 1;
+        else if(dx < 0)
+            this.direction = -1;
+
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+
+    public void setState(ActorState state) {
+        this.state = state;
+    }
+
+    public void setOnHold(int time) {
+        this.holdTime = time;
+    }
+
+    public void setCurrentMap(GameMap currentMap) {
+        this.currentMap = currentMap;
+    }
+
+    public void tickHoldTime() {
+        holdTime--;
+    }
+
+    public boolean attack(Actor attackedActor) {
+        this.setOnHold(20);
+        if(attackedActor != null) {
+            attackedActor.decreaseCurrentLife(1);
+            attackedActor.setState(ActorState.Attacked);
+            attackedActor.setOnHold(30);
+        }
+        System.out.println(this + " attacked " + attackedActor + " looking to " + direction);
+        return true;
+    }
+
+    public boolean onHoldEnd() {
+        this.state = ActorState.Idle;
+        return true;
+    }
+
+    public boolean ai() {
+        return false;
     }
 
     public Actor clone() {
@@ -73,6 +171,10 @@ public class Actor extends GameObject {
         Actor clone = new Actor(id+"$"+cloneCount, width, height);
         cloneCount++;
         return clone;
+    }
+
+    public String toString() {
+        return id;
     }
 
 }

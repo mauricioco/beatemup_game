@@ -18,8 +18,8 @@ public class LogicManager {
         Floor fl_grass = new Floor("grass", height-180, width);
         Floor fl_grass_to_sand = new Floor("grass_to_sand", height-120, width);
         Floor fl_sand = new Floor("sand", height-180, width);
-        IActor player = new IActor("player", 32, 32);
-        Actor tree = new IActor("tree", 32, 64);
+        Actor player = new Actor("player", 32, 32);
+        Actor tree = new Actor("tree", 32, 64);
         EnemyActor enemy1 = new EnemyActor("enemy", 32, 32);
 
         // Binding sprites. Player sprite is the only animated so far:
@@ -47,7 +47,7 @@ public class LogicManager {
         gameMap.putFloor(fl_grass_to_sand.clone());
         gameMap.putFloor(fl_sand.clone());
         gameMap.putPlayerAt(player, width-64, height-64);
-        gameMap.putActorAt(enemy1, width-10, height-10);
+        gameMap.putActorAt(enemy1, width-10, height-120);
         gameMap.putActorAt(tree, width, height-52);
         gameMap.putActorAt(tree.clone(), width+128, height-64);
         gameMap.putActorAt(tree.clone(), width+12, height-61);

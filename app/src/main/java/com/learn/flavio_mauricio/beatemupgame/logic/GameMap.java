@@ -7,13 +7,14 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 /**
- * The world where all other game objects reside.
+ * The world where all other game objects reside. It also is responsible for
+ * controlling them. The world is self-aware...
  */
 public class GameMap extends GameObject {
     private int width;
     private int height;
     private Background background;
-    private IActor player = null;
+    private Actor player = null;
     private ArrayList<Actor> actorList;  // list of existing actors
     private ArrayList<Floor> floorList;
     private Hashtable<Actor, PointF> actorsLocation;    // hashtable where each actor is mapped to its current position.
@@ -31,13 +32,11 @@ public class GameMap extends GameObject {
 
     public void putActorAt(Actor actor, float x, float y) {
         actorList.add(actor);
-        if(actor instanceof EnemyActor){
-            ((EnemyActor) actor).setMap(this);
-        }
+        actor.setCurrentMap(this);
         actorsLocation.put(actor, new PointF(x, y));
     }
 
-    public void putPlayerAt(IActor player, float x, float y) {
+    public void putPlayerAt(Actor player, float x, float y) {
         this.player = player;
         this.putActorAt(player, x, y);
     }
@@ -54,6 +53,10 @@ public class GameMap extends GameObject {
         return actorList.iterator();
     }
 
+    public PointF getActorPosition(Actor actor) {
+        return actorsLocation.get(actor);
+    }
+
     public Background getBackground() {
         return background;
     }
@@ -62,7 +65,7 @@ public class GameMap extends GameObject {
         return height;
     }
 
-    public IActor getPlayer() {
+    public Actor getPlayer() {
         return player;
     }
 
@@ -105,13 +108,10 @@ public class GameMap extends GameObject {
         return offset;
     }
 
+    public boolean isInside(float x, float y) {
+        return isInsideHorizontal(x) && isInsideVertical(x, y);
+    }
 
-
-    /**
-     * This is the method to verify pertinence within the map. The beginning
-     * of collision detection! By now it's using the android screen as reference.
-     *
-     */
     public boolean isInsideHorizontal(float x) {
         return (x >= 0) && (x < width);
     }
@@ -121,54 +121,101 @@ public class GameMap extends GameObject {
         return (y >= floor.getFloorLimit()) && (y < height);
     }
 
-    /*
-    // This will return the list of actors to render (in order).
-    public ArrayList<Actor> getActorRenderList() {
-        ArrayList<Actor> renderList = new ArrayList<Actor>();
-        for(int i=0; i<actorList.size(); i++) {
-            Actor actor = actorList.get(i);
-            PointF pos = actorsLocation.get(actor);
-            for(int j=0; i<renderList.size(); j++) {
-                Actor actorToCompare = renderList.get(j);
-                PointF posToCompare = actorsLocation.get(actorToCompare);
-                if(pos.x < posToCompare.x) {
+    public Actor isColliding(Actor actor) {
+        PointF actorMaskBegin = actor.getMaskBegin(this);
+        PointF actorMaskEnd = actor.getMaskEnd(this);
 
+        return isColliding(actor, actorMaskBegin, actorMaskEnd);
+    }
+
+    public Actor isColliding(Actor actor, PointF maskBegin, PointF maskEnd) {
+        for(Actor otherActor : actorList) {
+            PointF otherMaskBegin = otherActor.getMaskBegin(this);
+            PointF otherMaskEnd = otherActor.getMaskEnd(this);
+            if(maskBegin.y < otherMaskEnd.y && maskBegin.y > otherMaskBegin.y ||
+                    maskEnd.y > otherMaskBegin.y && maskEnd.y < otherMaskEnd.y) {
+                // they are colliding...
+                if (maskEnd.x > otherMaskBegin.x && maskEnd.x < otherMaskEnd.x) {
+                    // collision from the right
+                    //if(actor.getId().equals("player")) System.out.println("from the right!");
+                    return otherActor;
+                } else if (maskBegin.x <= otherMaskEnd.x && maskBegin.x >= otherMaskBegin.x) {
+                    // collision from the left
+                    //if(actor.getId().equals("player")) System.out.println("from the left!");
+                    return otherActor;
                 }
             }
+
         }
-        return renderList;
+        return null;
     }
-    */
+
+    public Actor isAttacking(Actor actor) {
+        PointF attackMaskBegin = actor.getMaskBegin(this);
+        PointF attackMaskEnd = actor.getMaskEnd(this);
+        int attackDir = actor.getDirection();
+
+        attackMaskBegin.x += attackDir*actor.getWidth();
+        attackMaskEnd.x += attackDir*actor.getWidth();
+
+        return isColliding(actor, attackMaskBegin, attackMaskEnd);
+    }
 
     public void update() {
         for(Actor actor : actorList) {
-            updateActorPos(actor);
-            if(actor instanceof EnemyActor){
-                ((EnemyActor) actor).RandomAI(actorsLocation.get(actor), actorsLocation.get(player));
+            // updating state
+            if(actor.isOnHold()) {
+                if(actor.getId().equals("player")) {
+                    //System.out.println(actor + " is waiting because he " + actor.getState().getId());
+                }
+                actor.tickHoldTime();
+                continue;
+            }else if(actor.isHoldEnded()) {
+                actor.tickHoldTime();
+                actor.onHoldEnd();
+            }else{
+                actor.ai();
             }
+
+            if(actor.getState() == ActorState.Attacking) {
+                Actor attackedActor = isAttacking(actor);
+                actor.attack(attackedActor);
+            }
+
+            updateActorPos(actor);
+
         }
     }
 
     private void updateActorPos(Actor actor) {
         PointF actorPos = actorsLocation.get(actor);
-
+        PointF oldPos = new PointF(actorPos.x, actorPos.y);
         PointF newPos = new PointF(actorPos.x + actor.getDx(), actorPos.y);
+
+        // change the location of this check.
         if(actor instanceof EnemyActor){
-            if(!isInsideHorizontal(((EnemyActor) actor).getTarget().x) && !isInsideVertical(((EnemyActor) actor).getTarget().x, ((EnemyActor) actor).getTarget().y)){
-                ((EnemyActor) actor).setState(States.Idle);
+            if(!isInsideHorizontal(((EnemyActor) actor).getTarget().x) &&
+                    !isInsideVertical(((EnemyActor) actor).getTarget().x,
+                            ((EnemyActor) actor).getTarget().y)){
+                ((EnemyActor) actor).setState(ActorState.Idle);
             }
         }
-        if(isInsideHorizontal(newPos.x) && isInsideVertical(newPos.x, newPos.y)) {
+
+
+        if (isInside(newPos.x, newPos.y)) {
             actorPos.x = newPos.x;
         }
 
         newPos.x = actorPos.x;
         newPos.y = actorPos.y + actor.getDy();
-        if(isInsideVertical(newPos.x, newPos.y)){
+        if (isInsideVertical(newPos.x, newPos.y)) {
             actorPos.y = newPos.y;
         }
 
-        actorsLocation.put(actor, actorPos);
+        if(isColliding(actor) != null) {
+            actorPos.x = oldPos.x;
+            actorPos.y = oldPos.y;
+        }
     }
 
     public void startMovingActorTo(Actor actor, float x, float y) {
@@ -194,17 +241,6 @@ public class GameMap extends GameObject {
         }else{
             actor.setDerivative(cos, sin);
         }
-    }
-
-    public boolean VerifyCollision(Actor actor1, Actor actor2){
-        PointF actPos1 = actorsLocation.get(actor1);
-        PointF actPos2 = actorsLocation.get(actor2);
-
-        PointF mask1 = actor1.getMask();
-        PointF mask2 = actor2.getMask();
-
-
-        return false;
     }
 
 }
