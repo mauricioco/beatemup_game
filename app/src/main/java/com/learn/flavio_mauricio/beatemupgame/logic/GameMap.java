@@ -231,7 +231,7 @@ public class GameMap extends GameObject {
         float newPosX = (actor.getSpeed()*cos) + actorPos.x;
         float newPosY = (actor.getSpeed()*sin) + actorPos.y;
 
-        // Aparently, detecting if actor reached its destination is not working.
+        // Apparently, detecting if actor reached its destination is not working.
 
         float newHip = (float) Math.sqrt( Math.pow((newPosX-actorPos.x), 2) +
                 Math.pow((newPosY-actorPos.y), 2) );

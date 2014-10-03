@@ -33,17 +33,20 @@ public class Camera {
     private GameMap activeMap;
     private int width;
     private int height;
+    private int wScale = 320;
+    private int hScale = 240;
     private Actor actorToFollow;
     private DPad dPad;
 
     public Camera(int width, int height, GameMap activeMap, Actor actorToFollow, Resources resources) {
         this.width = width;
         this.height = height;
+        this.wScale = width / wScale;
+        this.hScale = height / hScale;
         this.activeMap = activeMap; // preferably, this map should have the same width and height of this camera.
 
         this.actorToFollow = actorToFollow;
-        float scale = width / 320;
-        this.dPad = new DPad(BitmapFactory.decodeResource(resources, R.drawable.button_dpad), 0, 0, scale);
+        this.dPad = new DPad(BitmapFactory.decodeResource(resources, R.drawable.button_dpad), 0, 0, wScale);
     }
 
     public int[] getButtonPressed(float x, float y) {
@@ -150,10 +153,10 @@ public class Camera {
             if(actor.equals(actorToFollow)) {
                 Sprite sprite = GraphicManager.getSprite(actor);
                 PointF pos = activeMap.getActorPos(actor);
-                int left = width/2 - (int) (actor.getWidth() * (width / 320) / 2);
-                int top = (int)pos.y - (int) actor.getHeight() * (height / 240) / 2;
-                int right = width/2 + (int) actor.getWidth() * (width / 320) / 2;
-                int bottom = (int)pos.y + (int) actor.getHeight() * (height / 240) / 2;
+                int left = width/2 - (int) (actor.getWidth() * (wScale) / 2);
+                int top = (int)pos.y - (int) actor.getHeight() * (hScale) / 2;
+                int right = width/2 + (int) actor.getWidth() * (wScale) / 2;
+                int bottom = (int)pos.y + (int) actor.getHeight() * (hScale) / 2;
                 Rect bmpRect = new Rect(left, top, right, bottom);
                 if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
                     if(actor.getState() == ActorState.Attacked) {
@@ -171,11 +174,11 @@ public class Camera {
             }else{
                 Sprite sprite = GraphicManager.getSprite(actor);
                 PointF pos = activeMap.getActorPos(actor);
-                int left = (int) pos.x - (int) (actor.getWidth() * (width / 320) / 2);
+                int left = (int) pos.x - (int) (actor.getWidth() * (wScale) / 2);
                 left -= (int) beginDraw.x;
-                int top =  (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
-                int right = left + (int) actor.getWidth() * (width / 320);
-                int bottom = top + (int) actor.getHeight() * (height / 240);
+                int top =  (int) pos.y - (int) actor.getHeight() * (hScale) / 2;
+                int right = left + (int) actor.getWidth() * (wScale);
+                int bottom = top + (int) actor.getHeight() * (hScale);
                 Rect bmpRect = new Rect(left, top, right, bottom);
                 if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
                     if(actor.getState() == ActorState.Attacked) {
