@@ -219,10 +219,6 @@ public class GameMap extends GameObject {
             actorPos.y = newPos.y;
         }
 
-        if(isColliding(actor) != null) {
-            actorPos.x = oldPos.x;
-            actorPos.y = oldPos.y;
-        }
     }
 
     public void startMovingActorTo(Actor actor, float x, float y) {

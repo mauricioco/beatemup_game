@@ -149,7 +149,7 @@ public class Actor extends GameObject {
 
     public boolean attack(Actor attackedActor) {
         this.setOnHold(20);
-        if(attackedActor != null && attackedActor.getState() == ActorState.Unconscious) {
+        if(attackedActor != null && attackedActor.getState() != ActorState.Unconscious) {
             attackedActor.decreaseCurrentLife(1);
             attackedActor.setState(ActorState.Attacked);
             attackedActor.setOnHold(30);
