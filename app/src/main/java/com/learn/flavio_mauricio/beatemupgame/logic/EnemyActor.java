@@ -27,6 +27,8 @@ public class EnemyActor extends Actor{
 
     public boolean ai() {
 
+
+
         PointF position = currentMap.getActorPos(this);
         Actor playerActor = currentMap.getPlayer();
         PointF player = currentMap.getActorPos(playerActor);
@@ -53,7 +55,6 @@ public class EnemyActor extends Actor{
             switch(state.getId()){
                 case 1:
                     //System.out.println("Moving");
-                    target.set(30, 40);
                     setMoving(position);
                     return true;
                 case 2:
@@ -110,8 +111,8 @@ public class EnemyActor extends Actor{
         if (Math.abs(position.x - player.x) < 32) {
             state = ActorState.Idle;
         }else{
-            currentMap.startMovingActorTo(this, player.x, player.y);
-            /*
+            //currentMap.startMovingActorTo(this, player.x, player.y);
+
             int diffX = (int) (player.x - position.x);
             int directionX;
             if (diffX != 0) {
@@ -138,8 +139,14 @@ public class EnemyActor extends Actor{
             }else{
                 dy = speed*directionY;
             }
-            */
+
         }
+    }
+
+    public EnemyActor clone() {
+        EnemyActor clone = new EnemyActor(id+"$"+cloneCount, width, height);
+        cloneCount++;
+        return clone;
     }
 
 }

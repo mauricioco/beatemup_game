@@ -6,43 +6,30 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-/**
- * The world where all other game objects reside. It also is responsible for
- * controlling them. The world is self-aware...
- */
-public class GameMap extends GameObject {
-    private int width;
-    private int height;
-    private Background background;
-    private Actor player = null;
+public class Game {
+/*
+    private GameMap currentMap;
     private ArrayList<Actor> actorList;  // list of existing actors
-    private ArrayList<Floor> floorList;
-    private Hashtable<Actor, PointF> actorsLocation;    // hashtable where each actor is mapped to its current position.
+    private Hashtable<Actor, PointF> actorsLocation;
+        // each actor is mapped to its current position on current map.
+    private Actor player;
 
-    public GameMap(String id, Background background, Floor floor, int width, int height) {
-        super(id);
-        this.width = width;
-        this.height = height;
-        this.background = background;
+    public Game(Actor player, GameMap currentMap) {
         this.actorList = new ArrayList<Actor>();
-        this.floorList = new ArrayList<Floor>();
-        this.floorList.add(floor);
         this.actorsLocation = new Hashtable<Actor, PointF>();
+        this.player = player;
+        this.currentMap = currentMap;
     }
 
     public void putActorAt(Actor actor, float x, float y) {
         actorList.add(actor);
-        actor.setCurrentMap(this);
+        actor.setCurrentMap(currentMap);
         actorsLocation.put(actor, new PointF(x, y));
     }
 
     public void putPlayerAt(Actor player, float x, float y) {
         this.player = player;
         this.putActorAt(player, x, y);
-    }
-
-    public void putFloor(Floor floor) {
-        floorList.add(floor);
     }
 
     public PointF getActorPos(Actor actor) {
@@ -57,55 +44,8 @@ public class GameMap extends GameObject {
         return actorsLocation.get(actor);
     }
 
-    public Background getBackground() {
-        return background;
-    }
-
-    public float getHeight() {
-        return height;
-    }
-
     public Actor getPlayer() {
         return player;
-    }
-
-    public float getWidth() {
-        return width;
-    }
-
-    public Floor getFloorAt(float x) {
-        int i, atWidth=0;
-        for(i=0; i<floorList.size(); i++) {
-            if (x < atWidth) {
-                return floorList.get(i-1);
-            }
-            atWidth += floorList.get(i).getSizeX();
-        }
-        return floorList.get(i-1);
-    }
-
-    public Floor getPreviousFloor(Floor currFloor) {
-        int i = floorList.indexOf(currFloor);
-        if(i > 0)
-            return floorList.get(i-1);
-        return floorList.get(0);
-    }
-
-    public Floor getNextFloor(Floor currFloor) {
-        int i = floorList.indexOf(currFloor);
-        if(i < floorList.size()-1)
-            return floorList.get(i+1);
-        return floorList.get(floorList.size()-1);
-    }
-
-    public int getFloorOffset(Floor currFloor) {
-        int offset = 0;
-        for(Floor floor : floorList) {
-            if(floor.equals(currFloor))
-                break;
-            offset += floor.getSizeX();
-        }
-        return offset;
     }
 
     public boolean isInside(float x, float y) {
@@ -113,25 +53,25 @@ public class GameMap extends GameObject {
     }
 
     public boolean isInsideHorizontal(float x) {
-        return (x >= 0) && (x < width);
+        return (x >= 0) && (x < currentMap.getWidth());
     }
 
     public boolean isInsideVertical(float x, float y) {
-        Floor floor = getFloorAt(x);
-        return (y >= floor.getFloorLimit()) && (y < height);
+        Floor floor = currentMap.getFloorAt(x);
+        return (y >= floor.getFloorLimit()) && (y < currentMap.getHeight());
     }
 
     public Actor isColliding(Actor actor) {
-        PointF actorMaskBegin = actor.getMaskBegin(this);
-        PointF actorMaskEnd = actor.getMaskEnd(this);
+        PointF actorMaskBegin = actor.getMaskBegin(currentMap);
+        PointF actorMaskEnd = actor.getMaskEnd(currentMap);
 
         return isColliding(actor, actorMaskBegin, actorMaskEnd);
     }
 
     public Actor isColliding(Actor actor, PointF maskBegin, PointF maskEnd) {
         for(Actor otherActor : actorList) {
-            PointF otherMaskBegin = otherActor.getMaskBegin(this);
-            PointF otherMaskEnd = otherActor.getMaskEnd(this);
+            PointF otherMaskBegin = otherActor.getMaskBegin(currentMap);
+            PointF otherMaskEnd = otherActor.getMaskEnd(currentMap);
             if(maskBegin.y < otherMaskEnd.y && maskBegin.y > otherMaskBegin.y ||
                     maskEnd.y > otherMaskBegin.y && maskEnd.y < otherMaskEnd.y) {
                 // they are colliding...
@@ -218,11 +158,6 @@ public class GameMap extends GameObject {
         if (isInsideVertical(newPos.x, newPos.y)) {
             actorPos.y = newPos.y;
         }
-
-        if(isColliding(actor) != null) {
-            actorPos.x = oldPos.x;
-            actorPos.y = oldPos.y;
-        }
     }
 
     public void startMovingActorTo(Actor actor, float x, float y) {
@@ -248,6 +183,5 @@ public class GameMap extends GameObject {
         }else{
             actor.setDerivative(cos, sin);
         }
-    }
-
+    }*/
 }

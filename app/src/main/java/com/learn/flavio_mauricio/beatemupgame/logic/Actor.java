@@ -28,11 +28,11 @@ public class Actor extends GameObject {
 
     // Stats:
     protected boolean indestructible = true;
-    protected int maxLife = 3;
-    protected int currentLife = 3;
+    protected int maxLife = 100;
+    protected int currentLife = 100;
 
     // Number of clones so instances won`t repeat.
-    private int cloneCount = 0;
+    protected int cloneCount = 0;
 
     public Actor(String id, int width, int height) {
         super(id);
@@ -71,6 +71,10 @@ public class Actor extends GameObject {
 
     public PointF getPositionOnMap(GameMap map) {
         return map.getActorPos(this);
+    }
+
+    public int getCurrentLife() {
+        return currentLife;
     }
 
     public int getDirection() {
@@ -126,7 +130,9 @@ public class Actor extends GameObject {
     }
 
     public void setState(ActorState state) {
-        this.state = state;
+        if(!isOnHold() || state == ActorState.Unconscious)
+            this.state = state;
+
     }
 
     public void setOnHold(int time) {
@@ -143,7 +149,7 @@ public class Actor extends GameObject {
 
     public boolean attack(Actor attackedActor) {
         this.setOnHold(20);
-        if(attackedActor != null) {
+        if(attackedActor != null && attackedActor.getState() == ActorState.Unconscious) {
             attackedActor.decreaseCurrentLife(1);
             attackedActor.setState(ActorState.Attacked);
             attackedActor.setOnHold(30);

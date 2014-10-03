@@ -36,6 +36,10 @@ public class Camera {
     private Actor actorToFollow;
     private DPad dPad;
 
+    // Constants:
+    private Paint ATTACKED_EFFECT = new Paint();
+    private Paint UNCONSCIOUS_EFFECT = new Paint();
+
     public Camera(int width, int height, GameMap activeMap, Actor actorToFollow, Resources resources) {
         this.width = width;
         this.height = height;
@@ -44,6 +48,19 @@ public class Camera {
         this.actorToFollow = actorToFollow;
         float scale = width / 320;
         this.dPad = new DPad(BitmapFactory.decodeResource(resources, R.drawable.button_dpad), 0, 0, scale);
+
+        // Setting constants
+        setConstants();
+    }
+
+    private void setConstants() {
+        ColorFilter filter = new LightingColorFilter(Color.RED, 1);
+        ATTACKED_EFFECT.setColor(Color.RED);
+        ATTACKED_EFFECT.setColorFilter(filter);
+
+        ColorFilter filter2 = new LightingColorFilter(Color.BLACK, 1);
+        UNCONSCIOUS_EFFECT.setColor(Color.BLACK);
+        UNCONSCIOUS_EFFECT.setColorFilter(filter2);
     }
 
     public int[] getButtonPressed(float x, float y) {
@@ -137,61 +154,44 @@ public class Camera {
 
     void drawActors(Canvas canvas, Paint paint) {
         // Paint for attacked actor
-        Paint p = new Paint();
-        p.setColor(Color.RED);
-        ColorFilter filter = new LightingColorFilter(Color.RED, 1);
-        p.setColorFilter(filter);
-
         ArrayList<Actor> renderList = getActorRenderList();
         PointF actorToFollowPos = activeMap.getActorPos(actorToFollow);
         PointF beginDraw = new PointF(actorToFollowPos.x - width / 2,
                 actorToFollowPos.y - height / 2);
         for (Actor actor : renderList) {
+            Sprite sprite = GraphicManager.getSprite(actor);
+            PointF pos = activeMap.getActorPos(actor);
+            int left = (int) pos.x - (int) (actor.getWidth() * (width / 320) / 2);
+            left -= (int) beginDraw.x;
+            int top =  (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
+            int right = left + (int) actor.getWidth() * (width / 320);
+            int bottom = top + (int) actor.getHeight() * (height / 240);
             if(actor.equals(actorToFollow)) {
-                Sprite sprite = GraphicManager.getSprite(actor);
-                PointF pos = activeMap.getActorPos(actor);
-                int left = width/2 - (int) (actor.getWidth() * (width / 320) / 2);
-                int top = (int)pos.y - (int) actor.getHeight() * (height / 240) / 2;
-                int right = width/2 + (int) actor.getWidth() * (width / 320) / 2;
-                int bottom = (int)pos.y + (int) actor.getHeight() * (height / 240) / 2;
-                Rect bmpRect = new Rect(left, top, right, bottom);
-                if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
-                    if(actor.getState() == ActorState.Attacked) {
-                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
-                    }else{
-                        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
-                    }
-                } else {  // is animated
-                    if(actor.getState() == ActorState.Attacked) {
-                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
-                    }else{
-                        canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
-                    }
-                }
-            }else{
-                Sprite sprite = GraphicManager.getSprite(actor);
-                PointF pos = activeMap.getActorPos(actor);
-                int left = (int) pos.x - (int) (actor.getWidth() * (width / 320) / 2);
-                left -= (int) beginDraw.x;
-                int top =  (int) pos.y - (int) actor.getHeight() * (height / 240) / 2;
-                int right = left + (int) actor.getWidth() * (width / 320);
-                int bottom = top + (int) actor.getHeight() * (height / 240);
-                Rect bmpRect = new Rect(left, top, right, bottom);
-                if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
-                    if(actor.getState() == ActorState.Attacked) {
-                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
-                    }else{
-                        canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
-                    }
-                } else {  // is animated
-                    if(actor.getState() == ActorState.Attacked) {
-                        canvas.drawBitmap(sprite.update(), null, bmpRect, p);
-                    }else{
-                        canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
-                    }
-                }
+                left = width/2 - (int) (actor.getWidth() * (width / 320) / 2);
+                top = (int)pos.y - (int) actor.getHeight() * (height / 240) / 2;
+                right = width/2 + (int) actor.getWidth() * (width / 320) / 2;
+                bottom = (int)pos.y + (int) actor.getHeight() * (height / 240) / 2;
             }
+            Rect bmpRect = new Rect(left, top, right, bottom);
 
+            // DRAW THEM!
+            drawActorState(canvas, paint, actor, sprite, bmpRect);
+        }
+    }
+
+    private void drawActorState(Canvas canvas, Paint paint, Actor actor, Sprite sprite, Rect bmpRect) {
+        if(actor.getState() == ActorState.Attacking) {
+            bmpRect.offset((int)actor.getWidth()/6*actor.getDirection(), 0);
+            canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
+        }else if(actor.getState() == ActorState.Attacked) {
+            bmpRect.offset((int)-actor.getWidth()/8*actor.getDirection(), 0);
+            canvas.drawBitmap(sprite.update(), null, bmpRect, ATTACKED_EFFECT);
+        }else if(actor.getState() == ActorState.Unconscious) {
+            canvas.drawBitmap(sprite.update(), null, bmpRect, UNCONSCIOUS_EFFECT);
+        }else if (actor.getDx() == 0 && actor.getDy() == 0) {  // is not animated
+            canvas.drawBitmap(sprite.update(), null, bmpRect, paint);
+        }else{ // is moving
+            canvas.drawBitmap(sprite.updateAnim(), null, bmpRect, paint);
         }
     }
 
@@ -200,7 +200,7 @@ public class Camera {
     }
 
     void drawHud(Canvas canvas, Paint paint) {
-        canvas.drawText("This will be the hud!!", 0, 25, paint);
+        canvas.drawText(""+actorToFollow.getCurrentLife(), width-64, 25, paint);
     }
 
     public PointF getActorToFollowPos() {

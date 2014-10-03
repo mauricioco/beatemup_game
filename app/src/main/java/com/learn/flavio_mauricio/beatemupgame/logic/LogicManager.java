@@ -48,7 +48,17 @@ public class LogicManager {
         gameMap.putFloor(fl_sand.clone());
         gameMap.putPlayerAt(player, width-64, height-64);
         gameMap.putActorAt(enemy1, width-10, height-120);
-        gameMap.putActorAt(tree, width, height-52);
+        gameMap.putActorAt(enemy1.clone(), width+64, height-120);
+        //gameMap.putActorAt(enemy1.clone(), width+128, height-120);
+        gameMap.putActorAt(enemy1.clone(), width+256, height-120);
+        //gameMap.putActorAt(enemy1.clone(), width+196, height-120);
+        gameMap.putActorAt(enemy1.clone(), width+512, height-120);
+        //gameMap.putActorAt(enemy1.clone(), width+400, height-120);
+        //gameMap.putActorAt(enemy1.clone(), width+300, height-120);
+        //gameMap.putActorAt(enemy1.clone(), width+600, height-120);
+        gameMap.putActorAt(enemy1.clone(), width+700, height-120);
+
+        /*gameMap.putActorAt(tree, width, height-52);
         gameMap.putActorAt(tree.clone(), width+128, height-64);
         gameMap.putActorAt(tree.clone(), width+12, height-61);
         gameMap.putActorAt(tree.clone(), width+1000, height-2);
@@ -57,9 +67,9 @@ public class LogicManager {
         gameMap.putActorAt(tree.clone(), width+124, height-11);
         gameMap.putActorAt(tree.clone(), width+35, height-44);
         gameMap.putActorAt(tree.clone(), width+1200, height-23);
-        gameMap.putActorAt(tree.clone(), width+546, height-12);
-        gameMap.putActorAt(tree.clone(64, 128), width*2, height-120-16);
-        gameMap.putActorAt(tree.clone(64, 128), width*3, height-120-16);
+        gameMap.putActorAt(tree.clone(), width+546, height-12);*/
+        gameMap.putActorAt(tree.clone(64, 128), width*2, height-120-48);
+        gameMap.putActorAt(tree.clone(64, 128), width*3, height-120-48);
 
 
         return gameMap;
